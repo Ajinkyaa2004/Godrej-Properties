@@ -41,9 +41,14 @@
    Base Styles
 --------------------------- */
 @layer base {
-  html {
+  html, body {
     scroll-behavior: smooth;
-    height: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  html {
+    scroll-padding-top: 5rem; /* Account for fixed header */
   }
   
   body {
@@ -359,13 +364,56 @@ img {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Card hover effect (for amenities, highlights, etc.) */
-.card {
-  @apply bg-white rounded-lg shadow-sm transition-transform duration-300;
+/* Premium Card Styles */
+.highlight-card {
+  @apply relative overflow-hidden rounded-xl bg-gradient-to-br from-white to-gray-50 p-8 shadow-lg transition-all duration-500;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  transform: translateY(0);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.card:hover {
-  @apply shadow-md transform -translate-y-1;
+.highlight-card::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-br from-amber-50/30 to-amber-100/10 opacity-0 transition-opacity duration-500;
+  z-index: -1;
+}
+
+.highlight-card:hover {
+  @apply -translate-y-2 shadow-xl;
+  border-color: rgba(217, 119, 6, 0.2);
+}
+
+.highlight-card:hover::before {
+  opacity: 1;
+}
+
+.highlight-icon {
+  @apply mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-amber-100 to-amber-50 text-amber-600 shadow-md;
+  transition: all 0.3s ease;
+}
+
+.highlight-card:hover .highlight-icon {
+  @apply scale-110 bg-gradient-to-br from-amber-200 to-amber-100 shadow-lg;
+  transform: translateY(-5px);
+}
+
+/* Section Title */
+.section-title {
+  @apply mb-4 text-4xl font-bold text-gray-900 md:text-5xl lg:text-6xl;
+  background: linear-gradient(to right, #92400e, #b45309, #d97706);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  display: inline-block;
+  margin-bottom: 2.5rem;
+}
+
+.section-title::after {
+  content: '';
+  @apply absolute -bottom-4 left-0 h-1 w-20 bg-gradient-to-r from-amber-500 to-amber-300;
+  border-radius: 2px;
 }
 
 /* ---------------------------
