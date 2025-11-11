@@ -1,11 +1,113 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 
 const GalleryModal = ({ isOpen, onClose, images, title }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const nextImage = () => {
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'ArrowRight') nextImage();
+    if (e.key === 'ArrowLeft') prevImage();
+    if (e.key === 'Escape') onClose();
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyPress);
+      return () => window.removeEventListener('keydown', handleKeyPress);
+    }
+  }, [isOpen, currentIndex]);
+
+  useEffect(() => {
+    // Reset to first image when modal opens
+    if (isOpen) {
+      setCurrentIndex(0);
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm animate-fadeIn" onClick={onClose}>
+      <div className="relative w-full max-w-6xl mx-4 animate-scaleIn" onClick={(e) => e.stopPropagation()}>
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute -top-12 right-0 text-white hover:text-amber-400 transition-colors z-10"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {/* Title */}
+        <div className="absolute -top-12 left-0 text-white">
+          <h3 className="text-2xl font-bold">{title}</h3>
+          <p className="text-sm text-gray-300">Image {currentIndex + 1} of {images.length}</p>
+        </div>
+
+        {/* Main Image */}
+        <div className="relative bg-black rounded-xl overflow-hidden shadow-2xl">
+          <img
+            src={images[currentIndex]}
+            alt={`${title} - Image ${currentIndex + 1}`}
+            className="w-full h-[70vh] object-contain"
+          />
+
+          {/* Navigation Buttons */}
+          <button
+            onClick={prevImage}
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white p-4 rounded-full transition-all duration-300 hover:scale-110"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <button
+            onClick={nextImage}
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white p-4 rounded-full transition-all duration-300 hover:scale-110"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Thumbnail Strip */}
+        <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
+          {images.map((img, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentIndex(idx)}
+              className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
+                idx === currentIndex
+                  ? 'border-amber-500 scale-110 shadow-lg shadow-amber-500/50'
+                  : 'border-white/30 hover:border-white/60'
+              }`}
+            >
+              <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Placeholder for old implementation
+const OldGalleryModal = ({ isOpen, onClose, images, title }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   if (!isOpen) return null;
@@ -86,12 +188,273 @@ const GalleryModal = ({ isOpen, onClose, images, title }) => {
   );
 };
 
+// Static Image Box Component - Optimized for performance
+const StaticImageBox = ({ image, alt }) => {
+  return (
+    <div className="relative overflow-hidden rounded-xl shadow-lg group cursor-pointer h-full transition-shadow duration-300 hover:shadow-xl">
+      <div className="relative h-full overflow-hidden">
+        <img
+          src={image}
+          alt={alt}
+          className="w-full h-full object-cover"
+          loading="lazy"
+        />
+      </div>
+      {/* Simple gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      {/* View Gallery text */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
+        <div className="bg-black/60 px-4 py-2 rounded-lg">
+          <p className="text-white text-sm font-semibold">View Gallery</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Amenities Image Grid Component - Optimized
+const AmenitiesImageGrid = () => {
+  return (
+    <div className="space-y-4">
+      {/* First Row - Two columns */}
+      <div className="grid grid-cols-2 gap-4">
+        {/* Image Box 1 */}
+        <div className="h-48">
+          <StaticImageBox image="/image1.jpg" alt="Amenity view 1" />
+        </div>
+
+        {/* Image Box 2 */}
+        <div className="h-48">
+          <StaticImageBox image="/image4.jpg" alt="Amenity view 2" />
+        </div>
+      </div>
+
+      {/* Second Row - Full width video */}
+      <div className="w-full">
+        <div className="relative overflow-hidden rounded-xl shadow-lg border border-amber-100/70 h-56 group transition-all duration-300 hover:shadow-amber-200/40">
+          <video
+            className="absolute inset-0 w-full h-full object-cover"
+            src="/IMG_2616_2.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent opacity-40 group-hover:opacity-55 transition-opacity duration-300"></div>
+          <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white z-10">
+            <div>
+              <p className="text-xs uppercase tracking-[0.35em] text-amber-200">Immersive Preview</p>
+              <p className="text-xs uppercase tracking-[0.35em] text-amber-200">Room Walkthrough</p>
+            </div>
+            <div className="hidden sm:flex items-center gap-2 text-amber-200 text-xs font-medium">
+              <span className="inline-block w-2 h-2 bg-amber-400 rounded-full animate-pulse"></span>
+              <span>Now Playing</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Third Row - Two columns */}
+      <div className="grid grid-cols-2 gap-4">
+        {/* Image Box 3 */}
+        <div className="h-48">
+          <StaticImageBox image="/image7.jpg" alt="Amenity view 3" />
+        </div>
+
+        {/* Image Box 4 */}
+        <div className="h-48">
+          <StaticImageBox image="/image10.jpg" alt="Amenity view 4" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isNavbarVisible, setIsNavbarVisible] = useState(false);
   const [galleryModalOpen, setGalleryModalOpen] = useState(false);
   const [galleryModalImages, setGalleryModalImages] = useState([]);
   const [galleryModalTitle, setGalleryModalTitle] = useState('');
+  const [chatbotOpen, setChatbotOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([
+    { type: 'bot', text: 'Hello! 👋 Welcome to Godrej Reserve. How can I assist you today?' }
+  ]);
+  const [userInput, setUserInput] = useState('');
+  const messagesEndRef = useRef(null);
+
+  // Auto-scroll chat to bottom when messages change
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatMessages]);
+
+  // Optimized scroll reveal animation with debouncing
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      // Use requestAnimationFrame for better performance
+      requestAnimationFrame(() => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+            observer.unobserve(entry.target);
+          }
+        });
+      });
+    }, observerOptions);
+
+    // Observe all elements with reveal classes
+    const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+    revealElements.forEach(el => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Chatbot Q&A Logic
+  const getChatbotResponse = (message) => {
+    const lowerMsg = message.toLowerCase();
+    
+    // Project Info
+    if (lowerMsg.includes('project') || lowerMsg.includes('about')) {
+      return 'Godrej Reserve is a premium luxury residential project in Kandivali East, Mumbai. Spread across 18.6 acres with just 6 towers, offering spacious 3 & 4 BHK residences with world-class amenities. 🏢';
+    }
+    if (lowerMsg.includes('location') || lowerMsg.includes('where') || lowerMsg.includes('address')) {
+      return 'Godrej Reserve is located in Kandivali East, Mumbai. Prime location with excellent connectivity to Western Express Highway, Dahisar Metro, and major landmarks. 📍';
+    }
+    if (lowerMsg.includes('amenities') || lowerMsg.includes('facilities')) {
+      return 'World-class amenities include: Infinity Pool 🏊, State-of-the-Art Gym 🏋️, Clubhouse, Landscaped Gardens 🌳, Children\'s Play Area, 24/7 Security, Concierge Services, and much more!';
+    }
+    if (lowerMsg.includes('configuration') || lowerMsg.includes('bhk') || lowerMsg.includes('flat')) {
+      return 'We offer premium configurations:\n• 3 BHK - 1100 sq.ft (₹3.75 Cr*)\n• 3 BHK - 1330+ sq.ft (₹5.15 Cr*)\n• 3 BHK - 1450+ sq.ft (₹5.85 Cr*)\n• 4 BHK - 2000+ sq.ft (₹8.50 Cr*)';
+    }
+    
+    // Pricing
+    if (lowerMsg.includes('price') || lowerMsg.includes('cost')) {
+      return 'Starting price: ₹3.75 Cr* for 3 BHK (1100 sq.ft) up to ₹8.50 Cr* for 4 BHK (2000+ sq.ft). Prices vary based on configuration, floor, and view. 💰';
+    }
+    if (lowerMsg.includes('payment') || lowerMsg.includes('plan') || lowerMsg.includes('emi')) {
+      return 'Flexible payment plans available with milestone-based payments. EMI options through partner banks. Contact our sales team for detailed payment schedule. 📊';
+    }
+    if (lowerMsg.includes('offer') || lowerMsg.includes('discount')) {
+      return 'Special launch offers available! Limited period discounts for early bookings. Contact us for exclusive deals. 🎁';
+    }
+    if (lowerMsg.includes('booking amount')) {
+      return 'Booking amount varies by configuration. Please contact our sales team for exact booking details and documentation. 📝';
+    }
+    if (lowerMsg.includes('loan') || lowerMsg.includes('bank')) {
+      return 'Home loan assistance available through our partner banks including HDFC, ICICI, SBI, and Axis Bank. Pre-approved loans can be arranged. 🏦';
+    }
+    
+    // Technical Details
+    if (lowerMsg.includes('carpet area') || lowerMsg.includes('area')) {
+      return 'Carpet areas range from 1100 sq.ft to 2000+ sq.ft depending on configuration. All units are spacious with premium specifications. 📐';
+    }
+    if (lowerMsg.includes('possession') || lowerMsg.includes('ready') || lowerMsg.includes('completion')) {
+      return 'Expected possession: December 2027. Project is currently under construction with regular updates available. 🏗️';
+    }
+    if (lowerMsg.includes('rera')) {
+      return 'Yes, the project is RERA approved. RERA Registration Number: P51800052847. Fully compliant with all regulations. ✅';
+    }
+    if (lowerMsg.includes('material') || lowerMsg.includes('construction')) {
+      return 'Premium construction with imported fittings, vitrified tiles, modular kitchens, branded fixtures, and high-quality materials throughout. 🏗️';
+    }
+    if (lowerMsg.includes('floor plan')) {
+      return 'Detailed floor plans available for all configurations. Scroll to the Residence Configurations section or contact us for downloadable PDFs. 📋';
+    }
+    
+    // Contact & Support
+    if (lowerMsg.includes('contact') || lowerMsg.includes('phone') || lowerMsg.includes('email')) {
+      return 'Contact us:\n📞 Phone: +91-XXXXXXXXXX\n📧 Email: sales@godrejreserve.com\nOur team is available 9 AM - 6 PM, Monday to Sunday.';
+    }
+    if (lowerMsg.includes('call back') || lowerMsg.includes('callback')) {
+      return 'I\'d be happy to arrange a callback! Please share your contact number and our sales team will reach out within 2 hours. 📞';
+    }
+    if (lowerMsg.includes('office') || lowerMsg.includes('visit office')) {
+      return 'Sales Office: Godrej Reserve, Kandivali East, Mumbai. Open Monday to Sunday, 9 AM - 6 PM. Appointments recommended. 🏢';
+    }
+    
+    // Booking & Visit
+    if (lowerMsg.includes('site visit') || lowerMsg.includes('visit') || lowerMsg.includes('schedule')) {
+      return 'Book your site visit today! Available Monday to Sunday, 9 AM - 6 PM. Contact us or fill the enquiry form to schedule your visit. 📅';
+    }
+    if (lowerMsg.includes('appointment')) {
+      return 'Appointments are recommended for a personalized experience. Walk-ins are also welcome during visiting hours (9 AM - 6 PM). 🕐';
+    }
+    if (lowerMsg.includes('book online')) {
+      return 'Yes! You can book online by filling our enquiry form or clicking "Enquire Now" on any configuration. Our team will guide you through the process. 💻';
+    }
+    
+    // Navigation
+    if (lowerMsg.includes('photo') || lowerMsg.includes('gallery') || lowerMsg.includes('image')) {
+      return 'View our stunning property photos in the gallery section! Scroll up to see residence configurations and amenities. 📸';
+    }
+    if (lowerMsg.includes('360') || lowerMsg.includes('virtual')) {
+      return '360° virtual tour coming soon! Meanwhile, check out our detailed photos and floor plans. Contact us for a physical site visit. 🎥';
+    }
+    if (lowerMsg.includes('brochure') || lowerMsg.includes('download')) {
+      return 'Download our detailed brochure with all specifications, floor plans, and pricing. Click "Enquire Now" and request the brochure. 📥';
+    }
+    
+    // Specific Queries
+    if (lowerMsg.includes('3bhk') || lowerMsg.includes('3 bhk')) {
+      return 'Yes! We have 3 BHK flats in three variants:\n• 1100 sq.ft - ₹3.75 Cr*\n• 1330+ sq.ft - ₹5.15 Cr*\n• 1450+ sq.ft - ₹5.85 Cr*\nAll with premium specifications! 🏠';
+    }
+    if (lowerMsg.includes('4bhk') || lowerMsg.includes('4 bhk')) {
+      return 'Yes! Luxurious 4 BHK flats available - 2000+ sq.ft starting at ₹8.50 Cr*. Perfect for spacious family living with premium amenities. 🏠';
+    }
+    if (lowerMsg.includes('under construction')) {
+      return 'Yes, the project is currently under construction with expected possession in December 2027. Regular construction updates available. 🏗️';
+    }
+    if (lowerMsg.includes('total area') || lowerMsg.includes('project size')) {
+      return 'Godrej Reserve spans across 18.6 acres of prime land with just 6 towers, ensuring spacious living and low density. 🌳';
+    }
+    if (lowerMsg.includes('maintenance')) {
+      return 'Maintenance charges will be approximately ₹3-5 per sq.ft per month depending on the configuration. Final charges will be confirmed at possession. 💵';
+    }
+    if (lowerMsg.includes('landmark') || lowerMsg.includes('nearby')) {
+      return 'Nearby landmarks:\n🏫 Schools: Ryan International, Thakur International\n🏥 Hospitals: Shree Sai Hospital, Apex Hospital\n🛍️ Malls: Growel\'s 101, Raghuleela Mall\n🚇 Metro: Dahisar Metro (5 mins)\n🛣️ Highway: Western Express Highway (2 mins)';
+    }
+    
+    // Greetings
+    if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('hey')) {
+      return 'Hello! 👋 Welcome to Godrej Reserve. How can I help you today? Ask me about configurations, pricing, amenities, or booking!';
+    }
+    if (lowerMsg.includes('thank')) {
+      return 'You\'re welcome! 😊 Feel free to ask if you have any more questions. We\'re here to help!';
+    }
+    
+    // Default
+    return 'I\'m here to help! You can ask me about:\n• Property details & configurations\n• Pricing & payment plans\n• Amenities & features\n• Location & connectivity\n• Booking & site visits\n\nWhat would you like to know? 🤔';
+  };
+
+  const handleSendMessage = () => {
+    if (!userInput.trim()) return;
+    
+    // Add user message
+    const newMessages = [...chatMessages, { type: 'user', text: userInput }];
+    setChatMessages(newMessages);
+    
+    // Get bot response
+    setTimeout(() => {
+      const botResponse = getChatbotResponse(userInput);
+      setChatMessages([...newMessages, { type: 'bot', text: botResponse }]);
+    }, 500);
+    
+    setUserInput('');
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
 
   const openGallery = (images, title) => {
     setGalleryModalImages(images);
@@ -105,31 +468,39 @@ export default function Home() {
     document.body.style.overflow = 'auto';
   };
 
-  // Property images data
+  // Property images data - Using image1 to image24 (6 images per configuration)
   const propertyImages = {
     bhk3_1100: [
+      '/image1.jpg',
       '/image2.jpg',
-      '/image2.jpg',
-      '/image9.jpg'
-    ],
-    bhk4_1800: [
-      '/hero.png',
-      '/file.svg'
-    ],
-    amenities: [
-      '/hero.png',
-      '/file.svg',
-      '/globe.svg',
-      '/next.svg'
-    ],
-    bhk3_1450: [
       '/image3.jpg',
+      '/image4.jpg',
+      '/image5.jpg',
       '/image6.jpg'
     ],
-    bhk4_2000: [
-      '/image2.jpg',
+    bhk3_1450: [
+      '/image7.jpg',
+      '/image8.jpg',
+      '/image9.jpg',
       '/image10.jpg',
-      '/image8.jpg'
+      '/image11.jpg',
+      '/image12.jpg'
+    ],
+    bhk3_1600: [
+      '/image13.jpg',
+      '/image14.jpg',
+      '/image15.jpg',
+      '/image16.jpg',
+      '/image17.jpg',
+      '/image18.jpg'
+    ],
+    bhk4_2000: [
+      '/image19.jpg',
+      '/image20.jpg',
+      '/image21.jpg',
+      '/image22.jpg',
+      '/image23.jpg',
+      '/image24.jpg'
     ]
   };
 
@@ -150,12 +521,10 @@ export default function Home() {
       {/* ================ PREMIUM GLASS NAVBAR ================ */}
       <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-1000 ease-out transform ${isNavbarVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`}>
         <div className="relative">
-          {/* Enhanced Glassmorphism Background */}
-          <div className="absolute inset-0 bg-white/30 backdrop-blur-xl border-b border-white/20 shadow-xl">
+          {/* Optimized Background - removed backdrop-blur for performance */}
+          <div className="absolute inset-0 bg-white/95 border-b border-white/20 shadow-xl">
             {/* Subtle gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-b from-white/40 to-white/10"></div>
-            {/* Noise texture for better glass effect */}
-            <div className="absolute inset-0 mix-blend-overlay opacity-5 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGZpbHRlcj0idXJsKCNhKSIgb3BhY2l0eT0iLjA1IiBkPSJNMCAwaDQwMGg0MDB6Ii8+PC9zdmc+')]"></div>
           </div>
 
           <div className="relative max-w-7xl mx-auto px-6">
@@ -206,11 +575,11 @@ export default function Home() {
                   </div>
                 ))}
 
-                {/* CTA Button with Glass Effect */}
+                {/* CTA Button - Optimized */}
                 <div className="ml-4 relative group">
                   <a
                     href="#contact"
-                    className="relative px-5 py-2.5 bg-gradient-to-r from-amber-600/90 to-amber-500/90 backdrop-blur-sm text-white text-sm font-medium rounded-lg overflow-hidden group-hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300 transform group-hover:-translate-y-0.5 flex items-center border border-white/20 hover:border-white/30"
+                    className="relative px-5 py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white text-sm font-medium rounded-lg overflow-hidden group-hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300 transform group-hover:-translate-y-0.5 flex items-center border border-white/20 hover:border-white/30"
                   >
                     <span className="relative z-10 flex items-center">
                       <span>Schedule Visit</span>
@@ -246,7 +615,7 @@ export default function Home() {
 
       {/* Mobile Menu */}
       <div className={`lg:hidden fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 ${menuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-        <div className={`absolute top-20 left-0 right-0 bg-white/95 backdrop-blur-lg shadow-xl transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-y-0' : '-translate-y-full'}`}>
+        <div className={`absolute top-20 left-0 right-0 bg-white shadow-xl transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-y-0' : '-translate-y-full'}`}>
           <div className="px-6 py-4 space-y-4">
             {[
               { name: 'Home', href: '#home', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
@@ -378,12 +747,30 @@ export default function Home() {
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
-          <div className="text-center mb-16">
-            <span className="text-sm font-medium text-amber-600 tracking-widest">ELITE LIVING SPACES</span>
-            <h2 className="section-title mt-2">Premium Residences</h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-amber-400 to-amber-600 mx-auto mt-6 rounded-full"></div>
-            <p className="mt-6 text-lg text-gray-600 max-w-3xl mx-auto">
-              Redefining Kandivali's skyline with 18.6 Acres of land parcel & just 6 towers. Discover an endless vacation in your dream home.
+          <div className="text-center mb-20">
+            {/* Premium Badge */}
+            <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full glass-morphism mb-6 animate-fade-in">
+              <span className="w-2 h-2 bg-gradient-to-r from-amber-400 to-amber-600 rounded-full animate-pulse"></span>
+              <span className="text-sm font-medium bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent tracking-widest uppercase">Elite Living Spaces</span>
+              <span className="w-2 h-2 bg-gradient-to-r from-amber-400 to-amber-600 rounded-full animate-pulse"></span>
+            </div>
+            
+            {/* Luxury Heading */}
+            <h2 className="luxury-heading text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-amber-900 via-amber-700 to-amber-900 bg-clip-text text-transparent mb-8 animate-text-reveal">
+              PREMIUM RESIDENCES
+            </h2>
+            
+            {/* Decorative Divider */}
+            <div className="flex items-center justify-center gap-4 mb-8">
+              <div className="h-px w-20 bg-gradient-to-r from-transparent to-amber-400"></div>
+              <div className="w-3 h-3 rotate-45 border-2 border-amber-500"></div>
+              <div className="h-px w-32 bg-gradient-to-r from-amber-400 via-amber-600 to-amber-400"></div>
+              <div className="w-3 h-3 rotate-45 border-2 border-amber-500"></div>
+              <div className="h-px w-20 bg-gradient-to-r from-amber-400 to-transparent"></div>
+            </div>
+            
+            <p className="mt-6 text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed font-light">
+              Redefining Kandivali's skyline with <span className="font-semibold text-amber-700">18.6 Acres</span> of land parcel & just <span className="font-semibold text-amber-700">6 towers</span>. Discover an endless vacation in your dream home.
             </p>
           </div></div>
 
@@ -409,7 +796,7 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
           {/* 3 BHK - 1100 sq.ft */}
-          <div className="group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2">
+          <div className="reveal group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2" style={{animationDelay: '0.1s'}}>
             <div className="relative h-56 overflow-hidden">
               <div className="absolute inset-0 overflow-hidden">
                 <div className="flex h-full transition-transform duration-700 ease-in-out">
@@ -476,7 +863,7 @@ export default function Home() {
                     <svg className="w-4 h-4 text-amber-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-sm">Spacious Living & Dining Areas</span>
+                    <span className="text-sm">Elegantly Spacious Living & Dining Areas</span>
                   </li>
                   <li className="flex items-start">
                     <svg className="w-4 h-4 text-amber-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -504,7 +891,7 @@ export default function Home() {
           </div>
 
           {/* 3 BHK - 1330+ sq.ft */}
-          <div className="group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2">
+          <div className="reveal group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2" style={{animationDelay: '0.2s'}}>
             <div className="relative h-56 overflow-hidden">
               <div className="absolute inset-0 overflow-hidden">
                 <div className="flex h-full transition-transform duration-700 ease-in-out">
@@ -577,7 +964,7 @@ export default function Home() {
                     <svg className="w-4 h-4 text-amber-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-sm">Luxury Fittings in All Bathrooms</span>
+                    <span className="text-sm">Premium Luxury Fittings in All Bathrooms</span>
                   </li>
                 </ul>
 
@@ -599,11 +986,11 @@ export default function Home() {
           </div>
 
           {/* 3 BHK - 1450+ sq.ft */}
-          <div className="group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2">
+          <div className="reveal group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2" style={{animationDelay: '0.3s'}}>
             <div className="relative h-56 overflow-hidden">
               <div className="absolute inset-0 overflow-hidden">
                 <div className="flex h-full transition-transform duration-700 ease-in-out">
-                  {propertyImages.bhk3_1450.map((img, idx) => (
+                  {propertyImages.bhk3_1600.map((img, idx) => (
                     <div key={idx} className="min-w-full h-full">
                       <img
                         src={img}
@@ -620,7 +1007,7 @@ export default function Home() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    openGallery(propertyImages.bhk3_1450, '3 BHK | 1450+ sq.ft');
+                    openGallery(propertyImages.bhk3_1600, '3 BHK | 1450+ sq.ft');
                   }}
                   className="bg-black/40 hover:bg-black/60 text-white text-xs px-3 py-1.5 rounded-full flex items-center transition-colors"
                 >
@@ -694,7 +1081,7 @@ export default function Home() {
           </div>
 
           {/* 4 BHK - 2000+ sq.ft */}
-          <div className="group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2">
+          <div className="reveal group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2" style={{animationDelay: '0.4s'}}>
             <div className="relative h-56 overflow-hidden">
               <div className="absolute inset-0 overflow-hidden">
                 <div className="flex h-full transition-transform duration-700 ease-in-out">
@@ -793,79 +1180,678 @@ export default function Home() {
 
       {/* Amenities Section */}
 
-      <section id="amenities" className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-           <div className="container mx-auto px-6 relative z-10">
-          <div className="text-center mb-16">
-            <span className="text-sm font-medium text-amber-600 tracking-widest">Where Comfort Meets Indulgence</span>
-            <h2 className="section-title mt-2">WORLD CLASS AMENITIES</h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-amber-400 to-amber-600 mx-auto mt-6 rounded-full"></div>
-            <p className="mt-6 text-lg text-gray-600 max-w-3xl mx-auto">
-              Redefining Kandivali's skyline with 18.6 Acres of land parcel & just 6 towers. Discover an endless vacation in your dream home.
-            </p>
-          </div></div>
+      <section id="amenities" className="py-20 luxury-gradient-bg relative overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute top-10 right-10 w-72 h-72 bg-gradient-to-br from-amber-200/20 to-amber-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-gradient-to-tr from-amber-300/10 to-amber-100/20 rounded-full blur-3xl"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="container mx-auto px-6 relative">
+            <div className="text-center mb-20">
+              {/* Premium Badge */}
+              <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full glass-morphism mb-6 animate-fade-in">
+                <span className="w-2 h-2 bg-gradient-to-r from-amber-400 to-amber-600 rounded-full animate-pulse"></span>
+                <span className="text-sm font-medium bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent tracking-widest uppercase">Where Comfort Meets Indulgence</span>
+                <span className="w-2 h-2 bg-gradient-to-r from-amber-400 to-amber-600 rounded-full animate-pulse"></span>
+              </div>
+              
+              {/* Luxury Heading */}
+              <h2 className="luxury-heading text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-amber-900 via-amber-700 to-amber-900 bg-clip-text text-transparent mb-8 animate-text-reveal">
+                WORLD CLASS AMENITIES
+              </h2>
+              
+              {/* Decorative Divider */}
+              <div className="flex items-center justify-center gap-4 mb-8">
+                <div className="h-px w-20 bg-gradient-to-r from-transparent to-amber-400"></div>
+                <div className="w-3 h-3 rotate-45 border-2 border-amber-500"></div>
+                <div className="h-px w-32 bg-gradient-to-r from-amber-400 via-amber-600 to-amber-400"></div>
+                <div className="w-3 h-3 rotate-45 border-2 border-amber-500"></div>
+                <div className="h-px w-20 bg-gradient-to-r from-amber-400 to-transparent"></div>
+              </div>
+              
+              <p className="mt-6 text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed font-light">
+                Redefining Kandivali's skyline with <span className="font-semibold text-amber-700">18.6 Acres</span> of land parcel & just <span className="font-semibold text-amber-700">6 towers</span>. Discover an endless vacation in your dream home.
+              </p>
+            </div>
+          </div>
 
-          {/* Left-aligned box with limited width */}
-          <div className="max-w-sm ml-0 mr-auto"> {/* 👈 changed from mx-auto to ml-0 mr-auto */}
-            <div className="group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2">
-              <div className="relative h-64 overflow-hidden">
-                <div className="absolute inset-0 overflow-hidden">
-                  <div className="flex h-full transition-transform duration-700 ease-in-out">
-                    {['/amenities/pool.jpg', '/amenities/gym.jpg', '/amenities/lounge.jpg'].map((img, idx) => (
-                      <div key={idx} className="min-w-full h-full">
-                        <div className="w-full h-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center">
-                          <span className="text-5xl">{['🏊', '🏋️', '🍹'][idx]}</span>
+          {/* Flex container for left box and right masonry grid */}
+          <div className="flex flex-col lg:flex-row gap-12 items-start">
+            {/* Left-aligned box with limited width */}
+            <div className="reveal-left w-full lg:w-96 flex-shrink-0 float-luxury">
+              <div className="group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2 luxury-border pulse-glow">
+                {/* Premium Badge */}
+                <div className="absolute top-4 right-4 z-10 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                  EXCLUSIVE
+                </div>
+                
+                <div className="relative h-64 overflow-hidden">
+                  <div className="absolute inset-0 overflow-hidden">
+                    <div className="flex h-full transition-transform duration-700 ease-in-out">
+                      {['/amenities/pool.jpg', '/amenities/gym.jpg', '/amenities/lounge.jpg'].map((img, idx) => (
+                        <div key={idx} className="min-w-full h-full">
+                          <div className="w-full h-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center relative">
+                            <span className="text-6xl">{['🏊', '🏋️', '🍹'][idx]}</span>
+                            <div className="absolute inset-0 shimmer opacity-20"></div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <h3 className="text-3xl font-bold text-white luxury-heading">Luxury Amenities</h3>
+                    <p className="text-amber-300 font-medium text-sm mt-1">Experience the best in class facilities</p>
                   </div>
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h3 className="text-2xl font-bold text-white">Luxury Amenities</h3>
-                  <p className="text-amber-300 font-medium">Experience the best in class facilities</p>
+
+                <div className="p-6 bg-gradient-to-b from-white to-amber-50/30">
+                  <div className="mb-6">
+                    <ul className="space-y-3 text-gray-600">
+                      {[
+                        'Infinity Pool with Skyline Views',
+                        'State-of-the-Art Fitness Center',
+                        'Exclusive Residents Lounge',
+                        'Landscaped Gardens',
+                        "Children's Play Area",
+                        '24/7 Security & Concierge'
+                      ].map((item, index) => (
+                        <li key={index} className="flex items-start">
+                          <svg
+                            className="w-5 h-5 text-amber-500 mt-0.5 mr-3 flex-shrink-0"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          <span className="text-gray-700 font-medium">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <button className="w-full bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 text-white py-3 px-6 rounded-lg font-semibold hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl magnetic-button ripple-effect">
+                    View All Amenities
+                  </button>
                 </div>
               </div>
+            </div>
 
-              <div className="p-6">
-                <div className="mb-6">
-                  <ul className="space-y-3 text-gray-600">
-                    {[
-                      'Infinity Pool with Skyline Views',
-                      'State-of-the-Art Fitness Center',
-                      'Exclusive Residents Lounge',
-                      'Landscaped Gardens',
-                      "Children's Play Area",
-                      '24/7 Security & Concierge'
-                    ].map((item, index) => (
-                      <li key={index} className="flex items-start">
-                        <svg
-                          className="w-5 h-5 text-amber-500 mt-0.5 mr-2 flex-shrink-0"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        <span className="text-gray-700">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <button className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition-opacity">
-                  View All Amenities
-                </button>
+            {/* Right side - Masonry Grid in a Container */}
+            <div className="reveal-right flex-1 w-full">
+              <div className="glass-morphism rounded-2xl shadow-2xl p-8 border border-amber-100/50 luxury-border hover:shadow-amber-200/50 transition-all duration-500">
+                <AmenitiesImageGrid />
               </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* ---------------- PREMIUM SHOWCASE SECTION ---------------- */}
+      <section className="relative py-24 bg-gradient-to-b from-amber-50/30 via-white to-gray-50 overflow-hidden">
+        {/* Decorative Elements */}
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-amber-200 rounded-full mix-blend-multiply filter blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-amber-300 rounded-full mix-blend-multiply filter blur-3xl"></div>
+        </div>
 
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Section Header */}
+          <div className="text-center mb-16 reveal">
+            <div className="inline-block mb-4">
+              <span className="text-amber-600 text-sm font-semibold tracking-[0.2em] uppercase bg-amber-100/50 px-4 py-2 rounded-full border border-amber-200">
+                Exclusive Highlights
+              </span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 luxury-heading">
+              Discover <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-amber-800">Premium Living</span>
+            </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent mx-auto"></div>
+          </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {/* Image 1 */}
+            <div className="reveal group relative overflow-hidden rounded-3xl shadow-2xl cursor-pointer h-[550px] border-2 border-amber-100/50 hover:border-amber-300/80 transition-all duration-700" style={{animationDelay: '0.1s'}}>
+              <img
+                src="/Creative For post ads and etc/1.png"
+                alt="Premium Feature 1"
+                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+              />
+              {/* Luxury gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-40 group-hover:opacity-70 transition-all duration-500"></div>
+              
+              {/* Blur overlay on hover */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-500 backdrop-blur-0 group-hover:backdrop-blur-[2px]">
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-6 group-hover:translate-y-0">
+                  <button className="relative bg-white/95 text-amber-700 px-6 py-2.5 rounded-full font-semibold text-sm shadow-2xl hover:shadow-amber-500/30 hover:scale-110 transition-all duration-300 flex items-center gap-2 border-2 border-amber-200 hover:border-amber-400">
+                    <span className="relative z-10">View Details</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 relative z-10" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                    <div className="absolute inset-0 bg-gradient-to-r from-amber-100 to-amber-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
+                  </button>
+                </div>
+              </div>
+              
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+              </div>
+              
+              {/* Gold corner accents */}
+              <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            </div>
+
+            {/* Image 2 */}
+            <div className="reveal group relative overflow-hidden rounded-3xl shadow-2xl cursor-pointer h-[550px] border-2 border-amber-100/50 hover:border-amber-300/80 transition-all duration-700" style={{animationDelay: '0.2s'}}>
+              <img
+                src="/Creative For post ads and etc/2.png"
+                alt="Premium Feature 2"
+                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+              />
+              {/* Luxury gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-40 group-hover:opacity-70 transition-all duration-500"></div>
+              
+              {/* Blur overlay on hover */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-500 backdrop-blur-0 group-hover:backdrop-blur-[2px]">
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-6 group-hover:translate-y-0">
+                  <button className="relative bg-white/95 text-amber-700 px-6 py-2.5 rounded-full font-semibold text-sm shadow-2xl hover:shadow-amber-500/30 hover:scale-110 transition-all duration-300 flex items-center gap-2 border-2 border-amber-200 hover:border-amber-400">
+                    <span className="relative z-10">View Details</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 relative z-10" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                    <div className="absolute inset-0 bg-gradient-to-r from-amber-100 to-amber-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
+                  </button>
+                </div>
+              </div>
+              
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+              </div>
+              
+              {/* Gold corner accents */}
+              <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            </div>
+
+            {/* Image 3 */}
+            <div className="reveal group relative overflow-hidden rounded-3xl shadow-2xl cursor-pointer h-[550px] border-2 border-amber-100/50 hover:border-amber-300/80 transition-all duration-700" style={{animationDelay: '0.3s'}}>
+              <img
+                src="/Creative For post ads and etc/3.png"
+                alt="Premium Feature 3"
+                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+              />
+              {/* Luxury gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-40 group-hover:opacity-70 transition-all duration-500"></div>
+              
+              {/* Blur overlay on hover */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-500 backdrop-blur-0 group-hover:backdrop-blur-[2px]">
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-6 group-hover:translate-y-0">
+                  <button className="relative bg-white/95 text-amber-700 px-6 py-2.5 rounded-full font-semibold text-sm shadow-2xl hover:shadow-amber-500/30 hover:scale-110 transition-all duration-300 flex items-center gap-2 border-2 border-amber-200 hover:border-amber-400">
+                    <span className="relative z-10">View Details</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 relative z-10" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                    <div className="absolute inset-0 bg-gradient-to-r from-amber-100 to-amber-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
+                  </button>
+                </div>
+              </div>
+              
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+              </div>
+              
+              {/* Gold corner accents */}
+              <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- LOCATION & CONNECTIVITY SECTION ---------------- */}
+      <section id="location" className="relative py-20 overflow-hidden bg-gradient-to-b from-white via-gray-50 to-white">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10">
+          <div className="absolute top-1/4 -left-20 w-96 h-96 bg-amber-200 rounded-full mix-blend-multiply filter blur-3xl"></div>
+          <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-amber-300 rounded-full mix-blend-multiply filter blur-3xl"></div>
+        </div>
+
+        <div className="container mx-auto px-6 relative z-10">
+          {/* Section Header */}
+          <div className="text-center mb-16">
+            {/* Premium Badge */}
+            <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full glass-morphism mb-6 animate-fade-in">
+              <span className="w-2 h-2 bg-gradient-to-r from-amber-400 to-amber-600 rounded-full"></span>
+              <span className="text-sm font-medium bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent tracking-widest uppercase">Prime Location</span>
+              <span className="w-2 h-2 bg-gradient-to-r from-amber-400 to-amber-600 rounded-full"></span>
+            </div>
+            
+            {/* Luxury Heading */}
+            <h2 className="luxury-heading text-4xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-amber-900 via-amber-700 to-amber-900 bg-clip-text text-transparent mb-8 animate-text-reveal">
+              LOCATION & CONNECTIVITY
+            </h2>
+            
+            {/* Decorative Divider */}
+            <div className="flex items-center justify-center gap-4 mb-8">
+              <div className="h-px w-20 bg-gradient-to-r from-transparent to-amber-400"></div>
+              <div className="w-3 h-3 rotate-45 border-2 border-amber-500"></div>
+              <div className="h-px w-32 bg-gradient-to-r from-amber-400 via-amber-600 to-amber-400"></div>
+              <div className="w-3 h-3 rotate-45 border-2 border-amber-500"></div>
+              <div className="h-px w-20 bg-gradient-to-r from-amber-400 to-transparent"></div>
+            </div>
+            
+            <p className="mt-6 text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed font-light">
+              Strategically located in <span className="font-semibold text-amber-700">Kandivali East</span>, Mumbai's most sought-after neighborhood with unparalleled connectivity.
+            </p>
+          </div>
+
+          {/* Main Content Grid - SWAPPED: Info Box Left, Map Right */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+            
+            {/* Left Side - Compact Info Box (2 columns) */}
+            <div className="reveal-left lg:col-span-2">
+              <div className="bg-white rounded-2xl shadow-2xl border-3 border-amber-200 overflow-hidden h-[700px] flex flex-col">
+                
+                {/* Scrollable Content Container */}
+                <div className="overflow-y-auto flex-1 custom-scrollbar" style={{
+                  scrollBehavior: 'smooth',
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: '#d97706 #fef3c7'
+                }}>
+                  <style jsx>{`
+                    .custom-scrollbar::-webkit-scrollbar {
+                      width: 8px;
+                    }
+                    .custom-scrollbar::-webkit-scrollbar-track {
+                      background: linear-gradient(to bottom, #fef3c7, #fde68a);
+                      border-radius: 10px;
+                    }
+                    .custom-scrollbar::-webkit-scrollbar-thumb {
+                      background: linear-gradient(to bottom, #d97706, #b45309);
+                      border-radius: 10px;
+                      border: 2px solid #fef3c7;
+                    }
+                    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                      background: linear-gradient(to bottom, #b45309, #92400e);
+                    }
+                  `}</style>
+
+                  {/* Education Section - WHITE BACKGROUND */}
+                  <div className="border-b-2 border-amber-100 p-5 bg-white">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-500 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-base font-bold text-gray-900 uppercase tracking-wide">Education</h3>
+                    </div>
+                    <div className="space-y-1.5">
+                      {[
+                        { name: 'Cambridge School', time: '5 min' },
+                        { name: 'Thakur Public School', time: '7 min' },
+                        { name: 'Lokhandwala Foundation School', time: '8 min' },
+                        { name: 'Oxford International School', time: '9 min' },
+                        { name: 'Oberoi International School', time: '12 min' }
+                      ].map((item, idx) => (
+                        <div key={idx} className="flex items-center justify-between text-xs">
+                          <span className="text-gray-700">{item.name}</span>
+                          <span className="text-amber-600 font-semibold">{item.time}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Healthcare Section - WHITE BACKGROUND */}
+                  <div className="border-b-2 border-amber-100 p-5 bg-white">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-base font-bold text-gray-900 uppercase tracking-wide">Healthcare</h3>
+                    </div>
+                    <div className="space-y-1.5">
+                      {[
+                        { name: 'ESIS Hospital', time: '1 min' },
+                        { name: 'ALAP Hospital', time: '4 min' },
+                        { name: 'Thunga Hospital', time: '6 min' },
+                        { name: 'DNA Multispecialty Hospital', time: '7 min' },
+                        { name: 'Sanjeevani Hospital', time: '8 min' }
+                      ].map((item, idx) => (
+                        <div key={idx} className="flex items-center justify-between text-xs">
+                          <span className="text-gray-700">{item.name}</span>
+                          <span className="text-amber-600 font-semibold">{item.time}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Entertainment Section - WHITE BACKGROUND */}
+                  <div className="border-b-2 border-amber-100 p-5 bg-white">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-amber-600 to-amber-700 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-base font-bold text-gray-900 uppercase tracking-wide">Entertainment</h3>
+                    </div>
+                    <div className="space-y-1.5">
+                      {[
+                    
+                        { name: 'Centrium Mall', time: '8 min' },
+                        { name: 'Sachin Tendulkar Gymkhana', time: '9 min' },
+                        { name: 'Oberoi Mall', time: '10 min' },
+                        { name: 'Infiniti Mall, Malad', time: '10 min' },
+                        { name: 'Goregaon Sports Club', time: '10 min' },
+                        { name: 'Inorbit, Malad', time: '12 min' },
+                        { name: 'Eskay Resort', time: '14 min' }
+                      ].map((item, idx) => (
+                        <div key={idx} className="flex items-center justify-between text-xs">
+                          <span className="text-gray-700">{item.name}</span>
+                          <span className="text-amber-600 font-semibold">{item.time}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Connectivity Section - ORANGE/AMBER BACKGROUND */}
+                  <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-5">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-base font-bold text-white uppercase tracking-wide">Connectivity</h3>
+                    </div>
+                    <div className="space-y-1.5">
+                      {[
+                        { name: 'Akurli Metro Station', time: '2 min' },
+                        { name: 'Poisar Metro Station', time: '2 min' },
+                        { name: 'Kandivali Railway Station', time: '2 min' },
+                        { name: 'Dahanukarwadi Metro Station', time: '8 min' }
+                      ].map((item, idx) => (
+                        <div key={idx} className="flex items-center justify-between text-xs">
+                          <span className="text-white font-medium">{item.name}</span>
+                          <span className="text-white font-bold">{item.time}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            {/* Right Side - Custom Luxury Map (3 columns) */}
+            <div className="reveal-right lg:col-span-3">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border-3 border-amber-200 hover:border-amber-400 transition-all duration-500 group">
+                {/* Premium Map Container */}
+                <div className="relative h-[700px] bg-gradient-to-br from-amber-50 via-white to-amber-50">
+                  
+                  {/* Custom Illustrated Map */}
+                  <div className="absolute inset-0 overflow-hidden bg-gradient-to-br from-amber-50 via-white to-blue-50">
+                    {/* Map Background Pattern */}
+                    <svg className="absolute inset-0 w-full h-full opacity-20" xmlns="http://www.w3.org/2000/svg">
+                      <defs>
+                        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d4a574" strokeWidth="0.5"/>
+                        </pattern>
+                      </defs>
+                      <rect width="100%" height="100%" fill="url(#grid)" />
+                    </svg>
+                    
+                    {/* Main Roads */}
+                    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 700" xmlns="http://www.w3.org/2000/svg">
+                      {/* Vertical Main Road */}
+                      <line x1="400" y1="0" x2="400" y2="700" stroke="#d4a574" strokeWidth="8" opacity="0.6"/>
+                      <line x1="400" y1="0" x2="400" y2="700" stroke="#f5f5f5" strokeWidth="4" opacity="0.8"/>
+                      
+                      {/* Horizontal Main Road */}
+                      <line x1="0" y1="350" x2="800" y2="350" stroke="#d4a574" strokeWidth="8" opacity="0.6"/>
+                      <line x1="0" y1="350" x2="800" y2="350" stroke="#f5f5f5" strokeWidth="4" opacity="0.8"/>
+                      
+                      {/* Secondary Roads */}
+                      <line x1="200" y1="0" x2="200" y2="700" stroke="#d4a574" strokeWidth="3" opacity="0.4"/>
+                      <line x1="600" y1="0" x2="600" y2="700" stroke="#d4a574" strokeWidth="3" opacity="0.4"/>
+                      <line x1="0" y1="200" x2="800" y2="200" stroke="#d4a574" strokeWidth="3" opacity="0.4"/>
+                      <line x1="0" y1="500" x2="800" y2="500" stroke="#d4a574" strokeWidth="3" opacity="0.4"/>
+                      
+                      {/* Water Body */}
+                      <ellipse cx="250" cy="450" rx="80" ry="60" fill="#c9e6f5" opacity="0.6"/>
+                      <ellipse cx="250" cy="450" rx="70" ry="50" fill="#b3ddf2" opacity="0.4"/>
+                      
+                      {/* Green Spaces */}
+                      <rect x="520" y="120" width="60" height="60" fill="#d4edda" opacity="0.5" rx="5"/>
+                      <rect x="100" y="550" width="50" height="50" fill="#d4edda" opacity="0.5" rx="5"/>
+                      
+                      {/* Central Location Marker (Godrej Reserve) */}
+                      <circle cx="400" cy="350" r="30" fill="#dc3545" opacity="0.9"/>
+                      <circle cx="400" cy="350" r="25" fill="#fff" opacity="0.3"/>
+                      <circle cx="400" cy="350" r="8" fill="#fff"/>
+                      
+                      {/* Location Pin */}
+                      <path d="M 400 320 L 400 350 L 385 365 L 400 380 L 415 365 Z" fill="#dc3545" opacity="0.8"/>
+                    </svg>
+                    
+                    {/* Location Labels */}
+                    <div className="absolute inset-0 pointer-events-none">
+                      {/* Kandivali East Label */}
+                      <div className="absolute" style={{top: '45%', left: '52%', transform: 'translate(-50%, -50%)'}}>
+                        <div className="bg-white/90 px-3 py-1.5 rounded-lg shadow-lg border-2 border-amber-300">
+                          <p className="text-xs font-bold text-amber-700 uppercase tracking-wider">Kandivali East</p>
+                        </div>
+                      </div>
+                      
+                      {/* Nearby Areas */}
+                      <div className="absolute top-20 left-20 bg-white/80 px-2 py-1 rounded text-xs text-gray-600 shadow">Kandivali West</div>
+                      <div className="absolute top-20 right-20 bg-white/80 px-2 py-1 rounded text-xs text-gray-600 shadow">Thakur Village</div>
+                      <div className="absolute bottom-20 left-32 bg-white/80 px-2 py-1 rounded text-xs text-gray-600 shadow">Malad</div>
+                      <div className="absolute bottom-32 right-32 bg-white/80 px-2 py-1 rounded text-xs text-gray-600 shadow">Hanuman Nagar</div>
+                      
+                      {/* Metro Stations */}
+                      <div className="absolute" style={{top: '35%', left: '48%'}}>
+                        <div className="w-3 h-3 bg-blue-600 rounded-full border-2 border-white shadow-lg"></div>
+                      </div>
+                      <div className="absolute" style={{top: '55%', left: '38%'}}>
+                        <div className="w-3 h-3 bg-blue-600 rounded-full border-2 border-white shadow-lg"></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Luxury Corner Decorations */}
+                  <div className="absolute inset-0 pointer-events-none z-10">
+                    <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-amber-500"></div>
+                    <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-amber-500"></div>
+                    <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 border-amber-500"></div>
+                    <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-amber-500"></div>
+                  </div>
+
+                  {/* Premium Overlay for Luxury Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-amber-500/5 pointer-events-none z-5"></div>
+
+                  {/* Address Badge */}
+                  <div className="absolute bottom-6 left-6 right-6 bg-white/95 rounded-lg p-3 shadow-xl border-2 border-amber-300 z-20">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs font-bold text-amber-700 uppercase tracking-wide mb-0.5">Project Address</p>
+                        <p className="text-sm font-semibold text-gray-800">Godrej Reserve, Akurli Rd, Kandivali East</p>
+                        <p className="text-xs text-gray-600">Mumbai, Maharashtra 400101</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- PREMIUM INFO BOXES ---------------- */}
+      <section className="relative py-20 bg-gradient-to-b from-gray-50 via-white to-amber-50/30 overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10">
+          <div className="absolute top-1/4 -left-32 w-96 h-96 bg-amber-200 rounded-full mix-blend-multiply filter blur-3xl"></div>
+          <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-amber-300 rounded-full mix-blend-multiply filter blur-3xl"></div>
+        </div>
+
+        <div className="container mx-auto px-6 relative z-10">
+          {/* Section Header */}
+          <div className="text-center mb-16">
+            <div className="inline-block mb-4">
+              <span className="text-amber-600 text-sm font-semibold tracking-[0.2em] uppercase bg-amber-100/50 px-4 py-2 rounded-full border border-amber-200">
+                Essential Information
+              </span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 luxury-heading">
+              Discover <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-amber-800">Premium Living</span>
+            </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent mx-auto"></div>
+          </div>
+
+          {/* Three Horizontal Boxes */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Box 1 - Floor Plans & Configurations */}
+            <div className="group relative bg-white rounded-3xl shadow-xl border-2 border-amber-100/50 hover:border-amber-300/90 transition-all duration-500 overflow-hidden min-h-[420px] lg:min-h-[460px]">
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-amber-400/5 to-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative h-full flex flex-col p-8">
+                <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-amber-500/30 transition-all duration-500 group-hover:scale-110 mb-6">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                </div>
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 group-hover:text-amber-700 transition-colors duration-300">
+                  Floor Plans 
+                </h3>
+                <p className="text-gray-600 text-sm mb-4">
+                  Discover elegant 2, 3 and 4 BHK layouts crafted for premium living with smart space planning.
+                </p>
+                <div className="flex flex-wrap gap-2 mb-6 text-xs font-medium">
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">2 BHK</span>
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">3 BHK</span>
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">4 BHK</span>
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">Luxury Duplex</span>
+                </div>
+                <div className="mt-auto pt-4 border-t border-amber-100">
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                      <span>3D walkthroughs & modular kitchen layouts</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                      <span>Vaastu-aligned plans with dual balconies</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                      <span>Dedicated study & utility zones in select homes</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-amber-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            </div>
+
+            {/* Box 2 - Pricing & Payment Plans */}
+            <div className="group relative bg-white rounded-3xl shadow-xl border-2 border-amber-100/50 hover:border-amber-300/90 transition-all duration-500 overflow-hidden min-h-[420px] lg:min-h-[460px]">
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-amber-400/5 to-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative h-full flex flex-col p-8">
+                <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-700 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-amber-500/30 transition-all duration-500 group-hover:scale-110 mb-6">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 group-hover:text-amber-700 transition-colors duration-300">
+                  Pricing & Payment Plans
+                </h3>
+                <p className="text-gray-600 text-sm mb-4">
+                  Benefit from transparent pricing, launch offers and tailored EMIs designed for discerning buyers.
+                </p>
+                <div className="flex flex-wrap gap-2 mb-6 text-xs font-medium">
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">Flexible EMI</span>
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">Zero Down Payment</span>
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">Subsidy Ready</span>
+                </div>
+                <div className="mt-auto pt-4 border-t border-amber-100">
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                      <span>Launch price starting from ₹1.65 Cr*</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                      <span>10:80:10 milestone-linked payment schedule</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                      <span>Pre-EMI waived till possession on select units</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-amber-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            </div>
+
+            {/* Box 3 - Developer Profile */}
+            <div className="group relative bg-white rounded-3xl shadow-xl border-2 border-amber-100/50 hover:border-amber-300/90 transition-all duration-500 overflow-hidden min-h-[420px] lg:min-h-[460px]">
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-amber-400/5 to-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative h-full flex flex-col p-8">
+                <div className="w-16 h-16 bg-gradient-to-br from-amber-600 to-amber-800 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-amber-500/30 transition-all duration-500 group-hover:scale-110 mb-6">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 group-hover:text-amber-700 transition-colors duration-300">
+                  Godrej Properties
+                </h3>
+                <p className="text-gray-600 text-sm mb-4">
+                  Godrej Properties carries a 125+ year legacy of excellence, innovation and sustainable design.
+                </p>
+                <div className="flex flex-wrap gap-2 mb-6 text-xs font-medium">
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">125+ Years</span>
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">150+ Projects</span>
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">ISO Certified</span>
+                </div>
+                <div className="mt-auto pt-4 border-t border-amber-100">
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                      <span>Winner of 400+ industry awards globally</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                      <span>Leadership in IGBC Platinum-rated communities</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                      <span>Dedicated customer care with 24/7 concierge desk</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-amber-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            </div>
+
+          </div>
+        </div>
+      </section>
 
       {/* ---------------- CTA (Booking) ---------------- */}
       {/* <section
@@ -898,12 +1884,164 @@ export default function Home() {
       </footer> */}
 
       {/* Gallery Modal */}
-      {/* <GalleryModal
+      <GalleryModal
         isOpen={galleryModalOpen}
         onClose={closeGallery}
         images={galleryModalImages}
         title={galleryModalTitle}
-      /> */}
+      />
+
+      {/* Chatbot Widget */}
+      <div className="fixed bottom-6 right-6 z-50">
+        {/* Chat Window */}
+        {chatbotOpen && (
+          <div className="mb-4 w-96 h-[600px] bg-white rounded-2xl shadow-2xl border-2 border-amber-200 flex flex-col overflow-hidden animate-slideUp">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-amber-500 to-amber-600 text-white p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">Godrej Assistant</h3>
+                  <p className="text-xs text-amber-100">Online • Ready to help</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setChatbotOpen(false)}
+                className="hover:bg-white/20 p-2 rounded-full transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Messages Area */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+              {chatMessages.map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div
+                    className={`max-w-[80%] p-3 rounded-2xl ${
+                      msg.type === 'user'
+                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-br-none'
+                        : 'bg-white text-gray-800 shadow-md rounded-bl-none border border-gray-200'
+                    }`}
+                  >
+                    <p className="text-sm whitespace-pre-line">{msg.text}</p>
+                  </div>
+                </div>
+              ))}
+              {/* Scroll anchor */}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Quick Suggestions */}
+            <div className="px-4 py-2 bg-white border-t border-gray-200">
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                <button
+                  onClick={() => {
+                    setUserInput('What are the prices?');
+                    setTimeout(() => handleSendMessage(), 100);
+                  }}
+                  className="text-xs bg-amber-100 text-amber-700 px-3 py-1.5 rounded-full hover:bg-amber-200 transition-colors whitespace-nowrap"
+                >
+                  💰 Pricing
+                </button>
+                <button
+                  onClick={() => {
+                    setUserInput('Show me 3 BHK options');
+                    setTimeout(() => handleSendMessage(), 100);
+                  }}
+                  className="text-xs bg-amber-100 text-amber-700 px-3 py-1.5 rounded-full hover:bg-amber-200 transition-colors whitespace-nowrap"
+                >
+                  🏠 3 BHK
+                </button>
+                <button
+                  onClick={() => {
+                    setUserInput('Book a site visit');
+                    setTimeout(() => handleSendMessage(), 100);
+                  }}
+                  className="text-xs bg-amber-100 text-amber-700 px-3 py-1.5 rounded-full hover:bg-amber-200 transition-colors whitespace-nowrap"
+                >
+                  📅 Visit
+                </button>
+              </div>
+            </div>
+
+            {/* Input Area */}
+            <div className="p-4 bg-white border-t border-gray-200">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Ask me anything..."
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm"
+                />
+                <button
+                  onClick={handleSendMessage}
+                  className="bg-gradient-to-r from-amber-500 to-amber-600 text-white p-3 rounded-full hover:opacity-90 transition-opacity shadow-lg"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Floating Chat Button */}
+        <button
+          onClick={() => setChatbotOpen(!chatbotOpen)}
+          className="bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-white w-20 h-20 rounded-full shadow-2xl hover:shadow-amber-500/50 hover:scale-110 transition-all duration-300 flex items-center justify-center relative group animate-bounce-slow"
+        >
+          {chatbotOpen ? (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          ) : (
+            <>
+              {/* Playful Robot/Assistant Icon */}
+              <div className="relative">
+                {/* Robot Head */}
+                <div className="relative">
+                  {/* Antenna */}
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-0.5 h-2 bg-white"></div>
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-white rounded-full animate-ping"></div>
+                  
+                  {/* Head */}
+                  <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg border-2 border-white/40 flex items-center justify-center">
+                    {/* Eyes */}
+                    <div className="flex gap-2">
+                      <div className="w-2 h-2 bg-white rounded-full animate-blink"></div>
+                      <div className="w-2 h-2 bg-white rounded-full animate-blink" style={{animationDelay: '0.1s'}}></div>
+                    </div>
+                  </div>
+                  
+                  {/* Smile */}
+                  <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-5 h-1.5 border-b-2 border-white rounded-full"></div>
+                </div>
+              </div>
+              
+              {/* Notification Badge with Wave */}
+              <span className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold shadow-lg animate-bounce">
+                💬
+              </span>
+              
+              {/* Pulse Ring */}
+              <span className="absolute inset-0 rounded-full bg-amber-400 opacity-75 animate-ping"></span>
+            </>
+          )}
+        </button>
+      </div>
     </>
   );
 }
