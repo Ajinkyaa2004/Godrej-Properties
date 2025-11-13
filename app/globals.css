@@ -852,9 +852,77 @@ img, video {
 }
 
 /* ---------------------------
+   GPU Acceleration & Performance
+---------------------------- */
+/* Force GPU acceleration for critical elements */
+.gpu-accelerated {
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Optimize image loading and prevent layout shifts */
+img, video {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Prevent expensive repaints during scroll */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed;
+}
+
+/* Optimize masonry grid performance */
+.masonry-container {
+  contain: layout style paint;
+  transform: translate3d(0, 0, 0);
+}
+
+.masonry-item {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+/* Optimize gallery modal performance */
+.modal-backdrop {
+  will-change: opacity;
+  transform: translate3d(0, 0, 0);
+}
+
+.modal-content {
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+/* Prevent layout thrashing on hover effects */
+.hover-optimized {
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.3s ease;
+  will-change: transform;
+}
+
+.hover-optimized:hover {
+  transform: translate3d(0, -2px, 0);
+}
+
+/* ---------------------------
    Responsive tweaks
 ---------------------------- */
 @media (max-width: 640px) {
   h1 { font-size: 2rem; }
   h2 { font-size: 1.75rem; }
+  
+  /* Reduce animations on mobile for better performance */
+  .float-luxury,
+  .pulse-glow,
+  .shimmer {
+    animation: none !important;
+  }
 }

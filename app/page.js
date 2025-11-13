@@ -1,19 +1,33 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Cormorant_Garamond } from 'next/font/google';
+import ContactForm from './components/ContactForm';
+import ScheduleVisitForm from './components/ScheduleVisitForm';
+
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['500', '600', '700', '700'],
+})
 
 const GalleryModal = ({ isOpen, onClose, images, title }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
 
   const nextImage = () => {
     setCurrentIndex((prev) => (prev + 1) % images.length);
+    setImageLoading(true);
+    setImageError(false);
   };
 
   const prevImage = () => {
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    setImageLoading(true);
+    setImageError(false);
   };
 
   const handleKeyPress = (e) => {
@@ -33,6 +47,8 @@ const GalleryModal = ({ isOpen, onClose, images, title }) => {
     // Reset to first image when modal opens
     if (isOpen) {
       setCurrentIndex(0);
+      setImageLoading(true);
+      setImageError(false);
     }
   }, [isOpen]);
 
@@ -59,11 +75,40 @@ const GalleryModal = ({ isOpen, onClose, images, title }) => {
 
         {/* Main Image */}
         <div className="relative bg-black rounded-xl overflow-hidden shadow-2xl">
-          <img
-            src={images[currentIndex]}
-            alt={`${title} - Image ${currentIndex + 1}`}
-            className="w-full h-[70vh] object-contain"
-          />
+          <div className="relative w-full h-[70vh] flex items-center justify-center">
+            {/* Loading Spinner */}
+            {imageLoading && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-amber-500 border-t-transparent"></div>
+              </div>
+            )}
+            
+            {/* Error State */}
+            {imageError && (
+              <div className="absolute inset-0 flex items-center justify-center text-white">
+                <div className="text-center">
+                  <svg className="h-16 w-16 mx-auto mb-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <p>Image failed to load</p>
+                </div>
+              </div>
+            )}
+            
+            {/* Main Image */}
+            <img
+              src={images[currentIndex]}
+              alt={`${title} - Image ${currentIndex + 1}`}
+              className={`max-w-full max-h-full object-contain transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
+              onLoad={() => setImageLoading(false)}
+              onError={() => {
+                setImageLoading(false);
+                setImageError(true);
+                console.error('Failed to load image:', images[currentIndex]);
+              }}
+              style={{ maxWidth: '100%', maxHeight: '70vh' }}
+            />
+          </div>
 
           {/* Navigation Buttons */}
           <button
@@ -91,13 +136,17 @@ const GalleryModal = ({ isOpen, onClose, images, title }) => {
             <button
               key={idx}
               onClick={() => setCurrentIndex(idx)}
-              className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
-                idx === currentIndex
+              className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-300 ${idx === currentIndex
                   ? 'border-amber-500 scale-110 shadow-lg shadow-amber-500/50'
                   : 'border-white/30 hover:border-white/60'
-              }`}
+                }`}
             >
-              <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+              <img 
+                src={img} 
+                alt={`Thumbnail ${idx + 1}`} 
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
             </button>
           ))}
         </div>
@@ -140,10 +189,16 @@ const OldGalleryModal = ({ isOpen, onClose, images, title }) => {
           >
             {images.map((img, idx) => (
               <div key={idx} className="min-w-full h-full flex items-center justify-center">
-                <img
+                <Image
                   src={img}
                   alt={`${title} - View ${idx + 1}`}
+                  width={1200}
+                  height={600}
                   className="max-h-full max-w-full object-contain"
+                  priority={idx === 0}
+                  placeholder="blur"
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkbHB0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                  quality={80}
                 />
               </div>
             ))}
@@ -193,11 +248,15 @@ const StaticImageBox = ({ image, alt }) => {
   return (
     <div className="relative overflow-hidden rounded-xl shadow-lg group cursor-pointer h-full transition-shadow duration-300 hover:shadow-xl">
       <div className="relative h-full overflow-hidden">
-        <img
+        <Image
           src={image}
           alt={alt}
-          className="w-full h-full object-cover"
-          loading="lazy"
+          width={600}
+          height={400}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          placeholder="blur"
+          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkbHB0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+          quality={80}
         />
       </div>
       {/* Simple gradient overlay */}
@@ -234,12 +293,12 @@ const AmenitiesImageGrid = () => {
         <div className="relative overflow-hidden rounded-xl shadow-lg border border-amber-100/70 h-56 group transition-all duration-300 hover:shadow-amber-200/40">
           <video
             className="absolute inset-0 w-full h-full object-cover"
-            src="/IMG_2616_2.mp4"
+            src="/videos/IMG_2616_2.mp4"
             autoPlay
             loop
             muted
             playsInline
-            preload="auto"
+            preload="metadata"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent opacity-40 group-hover:opacity-55 transition-opacity duration-300"></div>
           <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white z-10">
@@ -284,6 +343,85 @@ export default function Home() {
   const [userInput, setUserInput] = useState('');
   const messagesEndRef = useRef(null);
 
+  // Auto-popup contact form after 10 seconds
+  const [showContactForm, setShowContactForm] = useState(false);
+  
+  // Schedule Visit form state
+  const [showScheduleVisitForm, setShowScheduleVisitForm] = useState(false);
+
+  useEffect(() => {
+    console.log('ContactForm initialization started');
+    
+    const checkUserAndShowForm = async () => {
+      try {
+        // Get user's IP address and other identifiers
+        const ipAddress = 'user_ip'; // Will be set server-side
+        
+        // Check if user already submitted (database check)
+        const checkResponse = await fetch('/api/contact/check', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ipAddress: window.location.href, // Use URL as identifier for now
+            email: '', // Empty for initial check
+            phoneNumber: ''
+          }),
+        });
+
+        const checkResult = await checkResponse.json();
+        
+        if (checkResult.exists) {
+          console.log('User already submitted form, not showing popup');
+          return; // Don't show form
+        }
+
+        // Check localStorage as backup
+        const formSubmitted = localStorage.getItem('contactFormSubmitted');
+        if (formSubmitted === 'true') {
+          console.log('Form marked as submitted in localStorage, not showing');
+          return;
+        }
+
+        // Show form after 5 seconds if user hasn't submitted before
+        console.log('User is new, setting 5 second timer for contact form');
+        const timer = setTimeout(() => {
+          console.log('5 seconds passed, showing contact form for new user');
+          setShowContactForm(true);
+        }, 5000); // 5 seconds
+
+        return () => {
+          console.log('Cleaning up contact form timer');
+          clearTimeout(timer);
+        };
+
+      } catch (error) {
+        console.error('Failed to check user submission status:', error);
+        // Fallback to localStorage check only
+        const formSubmitted = localStorage.getItem('contactFormSubmitted');
+        if (formSubmitted !== 'true') {
+          const timer = setTimeout(() => {
+            setShowContactForm(true);
+          }, 5000);
+          
+          return () => clearTimeout(timer);
+        }
+      }
+    };
+
+    checkUserAndShowForm();
+  }, []);
+
+  const hideContactForm = () => {
+    setShowContactForm(false);
+  };
+
+  const markAsSubmitted = () => {
+    localStorage.setItem('contactFormSubmitted', 'true');
+    setShowContactForm(false);
+  };
+
   // Auto-scroll chat to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -291,36 +429,40 @@ export default function Home() {
     }
   }, [chatMessages]);
 
-  // Optimized scroll reveal animation with debouncing
+  // Optimized scroll reveal animation with better performance
   useEffect(() => {
     const observerOptions = {
       threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
+      rootMargin: '50px 0px -50px 0px' // Start animation earlier for smoother experience
     };
 
     const observer = new IntersectionObserver((entries) => {
-      // Use requestAnimationFrame for better performance
-      requestAnimationFrame(() => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
+      // Batch DOM updates for better performance
+      const updates = entries.filter(entry => entry.isIntersecting);
+      
+      if (updates.length > 0) {
+        requestAnimationFrame(() => {
+          updates.forEach(entry => {
             entry.target.classList.add('active');
-            observer.unobserve(entry.target);
-          }
+            observer.unobserve(entry.target); // Stop observing once animated
+          });
         });
-      });
+      }
     }, observerOptions);
 
-    // Observe all elements with reveal classes
+    // Use passive event listeners and batch queries
     const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
     revealElements.forEach(el => observer.observe(el));
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
   // Chatbot Q&A Logic
   const getChatbotResponse = (message) => {
     const lowerMsg = message.toLowerCase();
-    
+
     // Project Info
     if (lowerMsg.includes('project') || lowerMsg.includes('about')) {
       return 'Godrej Reserve is a premium luxury residential project in Kandivali East, Mumbai. Spread across 18.6 acres with just 6 towers, offering spacious 3 & 4 BHK residences with world-class amenities. 🏢';
@@ -334,7 +476,7 @@ export default function Home() {
     if (lowerMsg.includes('configuration') || lowerMsg.includes('bhk') || lowerMsg.includes('flat')) {
       return 'We offer premium configurations:\n• 3 BHK - 1100 sq.ft (₹3.75 Cr*)\n• 3 BHK - 1330+ sq.ft (₹5.15 Cr*)\n• 3 BHK - 1450+ sq.ft (₹5.85 Cr*)\n• 4 BHK - 2000+ sq.ft (₹8.50 Cr*)';
     }
-    
+
     // Pricing
     if (lowerMsg.includes('price') || lowerMsg.includes('cost')) {
       return 'Starting price: ₹3.75 Cr* for 3 BHK (1100 sq.ft) up to ₹8.50 Cr* for 4 BHK (2000+ sq.ft). Prices vary based on configuration, floor, and view. 💰';
@@ -351,7 +493,7 @@ export default function Home() {
     if (lowerMsg.includes('loan') || lowerMsg.includes('bank')) {
       return 'Home loan assistance available through our partner banks including HDFC, ICICI, SBI, and Axis Bank. Pre-approved loans can be arranged. 🏦';
     }
-    
+
     // Technical Details
     if (lowerMsg.includes('carpet area') || lowerMsg.includes('area')) {
       return 'Carpet areas range from 1100 sq.ft to 2000+ sq.ft depending on configuration. All units are spacious with premium specifications. 📐';
@@ -368,7 +510,7 @@ export default function Home() {
     if (lowerMsg.includes('floor plan')) {
       return 'Detailed floor plans available for all configurations. Scroll to the Residence Configurations section or contact us for downloadable PDFs. 📋';
     }
-    
+
     // Contact & Support
     if (lowerMsg.includes('contact') || lowerMsg.includes('phone') || lowerMsg.includes('email')) {
       return 'Contact us:\n📞 Phone: +91-XXXXXXXXXX\n📧 Email: sales@godrejreserve.com\nOur team is available 9 AM - 6 PM, Monday to Sunday.';
@@ -379,7 +521,7 @@ export default function Home() {
     if (lowerMsg.includes('office') || lowerMsg.includes('visit office')) {
       return 'Sales Office: Godrej Reserve, Kandivali East, Mumbai. Open Monday to Sunday, 9 AM - 6 PM. Appointments recommended. 🏢';
     }
-    
+
     // Booking & Visit
     if (lowerMsg.includes('site visit') || lowerMsg.includes('visit') || lowerMsg.includes('schedule')) {
       return 'Book your site visit today! Available Monday to Sunday, 9 AM - 6 PM. Contact us or fill the enquiry form to schedule your visit. 📅';
@@ -390,7 +532,7 @@ export default function Home() {
     if (lowerMsg.includes('book online')) {
       return 'Yes! You can book online by filling our enquiry form or clicking "Enquire Now" on any configuration. Our team will guide you through the process. 💻';
     }
-    
+
     // Navigation
     if (lowerMsg.includes('photo') || lowerMsg.includes('gallery') || lowerMsg.includes('image')) {
       return 'View our stunning property photos in the gallery section! Scroll up to see residence configurations and amenities. 📸';
@@ -401,7 +543,7 @@ export default function Home() {
     if (lowerMsg.includes('brochure') || lowerMsg.includes('download')) {
       return 'Download our detailed brochure with all specifications, floor plans, and pricing. Click "Enquire Now" and request the brochure. 📥';
     }
-    
+
     // Specific Queries
     if (lowerMsg.includes('3bhk') || lowerMsg.includes('3 bhk')) {
       return 'Yes! We have 3 BHK flats in three variants:\n• 1100 sq.ft - ₹3.75 Cr*\n• 1330+ sq.ft - ₹5.15 Cr*\n• 1450+ sq.ft - ₹5.85 Cr*\nAll with premium specifications! 🏠';
@@ -421,7 +563,7 @@ export default function Home() {
     if (lowerMsg.includes('landmark') || lowerMsg.includes('nearby')) {
       return 'Nearby landmarks:\n🏫 Schools: Ryan International, Thakur International\n🏥 Hospitals: Shree Sai Hospital, Apex Hospital\n🛍️ Malls: Growel\'s 101, Raghuleela Mall\n🚇 Metro: Dahisar Metro (5 mins)\n🛣️ Highway: Western Express Highway (2 mins)';
     }
-    
+
     // Greetings
     if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('hey')) {
       return 'Hello! 👋 Welcome to Godrej Reserve. How can I help you today? Ask me about configurations, pricing, amenities, or booking!';
@@ -429,24 +571,24 @@ export default function Home() {
     if (lowerMsg.includes('thank')) {
       return 'You\'re welcome! 😊 Feel free to ask if you have any more questions. We\'re here to help!';
     }
-    
+
     // Default
     return 'I\'m here to help! You can ask me about:\n• Property details & configurations\n• Pricing & payment plans\n• Amenities & features\n• Location & connectivity\n• Booking & site visits\n\nWhat would you like to know? 🤔';
   };
 
   const handleSendMessage = () => {
     if (!userInput.trim()) return;
-    
+
     // Add user message
     const newMessages = [...chatMessages, { type: 'user', text: userInput }];
     setChatMessages(newMessages);
-    
+
     // Get bot response
     setTimeout(() => {
       const botResponse = getChatbotResponse(userInput);
       setChatMessages([...newMessages, { type: 'bot', text: botResponse }]);
     }, 500);
-    
+
     setUserInput('');
   };
 
@@ -521,10 +663,12 @@ export default function Home() {
       {/* ================ PREMIUM GLASS NAVBAR ================ */}
       <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-1000 ease-out transform ${isNavbarVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`}>
         <div className="relative">
-          {/* Optimized Background - removed backdrop-blur for performance */}
-          <div className="absolute inset-0 bg-white/95 border-b border-white/20 shadow-xl">
-            {/* Subtle gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/40 to-white/10"></div>
+          {/* Premium glassmorphism background */}
+          <div className="absolute inset-0 rounded-b-3xl bg-white/30 backdrop-blur-3xl border border-white/45 shadow-[0_18px_50px_rgba(15,23,42,0.26)]">
+            <div className="absolute inset-0 rounded-b-3xl bg-gradient-to-r from-white/90 via-white/35 to-white/15 opacity-100"></div>
+            <div className="absolute inset-0 rounded-b-3xl bg-gradient-to-b from-white/45 via-white/15 to-white/12"></div>
+            <div className="absolute -top-20 right-24 w-40 h-40 bg-amber-200/30 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-[-60px] left-12 w-48 h-48 bg-amber-300/20 rounded-full blur-3xl"></div>
           </div>
 
           <div className="relative max-w-7xl mx-auto px-6">
@@ -532,16 +676,22 @@ export default function Home() {
               {/* Brand Name with Partner Badge */}
               <div className="flex items-start space-x-6 h-full">
                 <a href="#home" className="relative z-10 flex items-center h-full">
-                  <div className="pt-10">
+                  <div className="pt-4">
                     <div className="flex items-start">
-                      <h1 className="text-4xl font-bold bg-gradient-to-r from-amber-800 via-amber-700 to-amber-600 bg-clip-text text-transparent font-['Playfair_Display'] font-semibold tracking-tight">
-                        Godrej Reserve
-                      </h1>
-                      <span className="ml-4 mt-2 text-xs font-medium bg-gradient-to-r from-amber-700/80 to-amber-600/80 text-white px-3 py-1 rounded-full border border-amber-500/30 shadow-sm">
+                      <Image 
+                        src="/Layer 5.png" 
+                        alt="Godrej Reserve Logo" 
+                        width={290} 
+                        height={70}
+                        
+                        className="object-contain -ml-20 mt-6"
+                      />
+
+                      <p className="ml-4 mt-3 text-sm font-medium  text-gray-600 px-3 py-1 rounded-full ">
                         PREFERRED PARTNER
-                      </span>
+                      </p>
                     </div>
-                    <p className="text-xs text-gray-600 font-medium -mt-4 flex items-center">
+                    <p className="text-xs text-gray-600 font-medium -mt-2 flex items-center">
                       <span className="inline-block w-1.5 h-1.5 bg-amber-600 rounded-full mr-2"></span>
                       Kandivali East, Mumbai
                     </p>
@@ -555,7 +705,7 @@ export default function Home() {
                   { name: 'Home', href: '#home', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
                   { name: 'About', href: '#about', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
                   { name: 'Amenities', href: '#amenities', icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z' },
-                  { name: 'Gallery', href: '#gallery', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
+                  { name: 'Gallery', href: '/gallery', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
                   { name: 'Contact', href: '#contact', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
                 ].map((item, index) => (
                   <div key={item.name} className="relative group">
@@ -577,8 +727,8 @@ export default function Home() {
 
                 {/* CTA Button - Optimized */}
                 <div className="ml-4 relative group">
-                  <a
-                    href="#contact"
+                  <button
+                    onClick={() => setShowScheduleVisitForm(true)}
                     className="relative px-5 py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white text-sm font-medium rounded-lg overflow-hidden group-hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300 transform group-hover:-translate-y-0.5 flex items-center border border-white/20 hover:border-white/30"
                   >
                     <span className="relative z-10 flex items-center">
@@ -588,7 +738,7 @@ export default function Home() {
                       </span>
                     </span>
                     <span className="absolute inset-0 bg-gradient-to-r from-amber-500/30 to-amber-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                  </a>
+                  </button>
                 </div>
               </nav>
 
@@ -621,7 +771,7 @@ export default function Home() {
               { name: 'Home', href: '#home', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
               { name: 'About', href: '#about', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
               { name: 'Amenities', href: '#amenities', icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z' },
-              { name: 'Gallery', href: '#gallery', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
+              { name: 'Gallery', href: '/gallery', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
               { name: 'Contact', href: '#contact', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
             ].map((item) => (
               <a
@@ -651,13 +801,21 @@ export default function Home() {
       <section
         id="home"
         className="relative h-[100vh] flex items-center justify-center overflow-hidden"
-        style={{
-          backgroundImage: "url('/hero.png')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center 20%',
-          backgroundRepeat: 'no-repeat',
-        }}
       >
+        {/* Hero Background Image */}
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/hero.png"
+            alt="Godrej Reserve Hero Background"
+            fill
+            className="object-cover"
+            style={{ objectPosition: 'center 20%' }}
+            priority
+            quality={90}
+            placeholder="blur"
+            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkbHB0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+          />
+        </div>
         {/* Animated Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/70" />
 
@@ -754,12 +912,12 @@ export default function Home() {
               <span className="text-sm font-medium bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent tracking-widest uppercase">Elite Living Spaces</span>
               <span className="w-2 h-2 bg-gradient-to-r from-amber-400 to-amber-600 rounded-full animate-pulse"></span>
             </div>
-            
+
             {/* Luxury Heading */}
             <h2 className="luxury-heading text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-amber-900 via-amber-700 to-amber-900 bg-clip-text text-transparent mb-8 animate-text-reveal">
               PREMIUM RESIDENCES
             </h2>
-            
+
             {/* Decorative Divider */}
             <div className="flex items-center justify-center gap-4 mb-8">
               <div className="h-px w-20 bg-gradient-to-r from-transparent to-amber-400"></div>
@@ -768,7 +926,7 @@ export default function Home() {
               <div className="w-3 h-3 rotate-45 border-2 border-amber-500"></div>
               <div className="h-px w-20 bg-gradient-to-r from-amber-400 to-transparent"></div>
             </div>
-            
+
             <p className="mt-6 text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed font-light">
               Redefining Kandivali's skyline with <span className="font-semibold text-amber-700">18.6 Acres</span> of land parcel & just <span className="font-semibold text-amber-700">6 towers</span>. Discover an endless vacation in your dream home.
             </p>
@@ -796,17 +954,22 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
           {/* 3 BHK - 1100 sq.ft */}
-          <div className="reveal group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2" style={{animationDelay: '0.1s'}}>
+          <div className="reveal group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2" style={{ animationDelay: '0.1s' }}>
             <div className="relative h-56 overflow-hidden">
               <div className="absolute inset-0 overflow-hidden">
                 <div className="flex h-full transition-transform duration-700 ease-in-out">
                   {propertyImages.bhk3_1100.map((img, idx) => (
                     <div key={idx} className="min-w-full h-full">
-                      <img
+                      <Image
                         src={img}
                         alt={`3 BHK Residence View ${idx + 1}`}
+                        width={600}
+                        height={400}
                         className="w-full h-full object-cover"
-                        loading="lazy"
+                        priority={idx === 0}
+                        placeholder="blur"
+                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkbHB0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                        quality={75}
                       />
                     </div>
                   ))}
@@ -891,17 +1054,21 @@ export default function Home() {
           </div>
 
           {/* 3 BHK - 1330+ sq.ft */}
-          <div className="reveal group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2" style={{animationDelay: '0.2s'}}>
+          <div className="reveal group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2" style={{ animationDelay: '0.2s' }}>
             <div className="relative h-56 overflow-hidden">
               <div className="absolute inset-0 overflow-hidden">
                 <div className="flex h-full transition-transform duration-700 ease-in-out">
                   {propertyImages.bhk3_1450.map((img, idx) => (
                     <div key={idx} className="min-w-full h-full">
-                      <img
+                      <Image
                         src={img}
                         alt={`3 BHK Premium View ${idx + 1}`}
+                        width={600}
+                        height={400}
                         className="w-full h-full object-cover"
-                        loading="lazy"
+                        placeholder="blur"
+                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkbHB0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                        quality={75}
                       />
                     </div>
                   ))}
@@ -986,17 +1153,21 @@ export default function Home() {
           </div>
 
           {/* 3 BHK - 1450+ sq.ft */}
-          <div className="reveal group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2" style={{animationDelay: '0.3s'}}>
+          <div className="reveal group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2" style={{ animationDelay: '0.3s' }}>
             <div className="relative h-56 overflow-hidden">
               <div className="absolute inset-0 overflow-hidden">
                 <div className="flex h-full transition-transform duration-700 ease-in-out">
                   {propertyImages.bhk3_1600.map((img, idx) => (
                     <div key={idx} className="min-w-full h-full">
-                      <img
+                      <Image
                         src={img}
                         alt={`3 BHK Premium View ${idx + 1}`}
+                        width={600}
+                        height={400}
                         className="w-full h-full object-cover"
-                        loading="lazy"
+                        placeholder="blur"
+                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkbHB0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                        quality={75}
                       />
                     </div>
                   ))}
@@ -1081,7 +1252,7 @@ export default function Home() {
           </div>
 
           {/* 4 BHK - 2000+ sq.ft */}
-          <div className="reveal group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2" style={{animationDelay: '0.4s'}}>
+          <div className="reveal group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2" style={{ animationDelay: '0.4s' }}>
             <div className="relative h-56 overflow-hidden">
               <div className="absolute inset-0 overflow-hidden">
                 <div className="flex h-full transition-transform duration-700 ease-in-out">
@@ -1184,7 +1355,7 @@ export default function Home() {
         {/* Decorative background elements */}
         <div className="absolute top-10 right-10 w-72 h-72 bg-gradient-to-br from-amber-200/20 to-amber-400/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-10 left-10 w-96 h-96 bg-gradient-to-tr from-amber-300/10 to-amber-100/20 rounded-full blur-3xl"></div>
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="container mx-auto px-6 relative">
             <div className="text-center mb-20">
@@ -1194,12 +1365,12 @@ export default function Home() {
                 <span className="text-sm font-medium bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent tracking-widest uppercase">Where Comfort Meets Indulgence</span>
                 <span className="w-2 h-2 bg-gradient-to-r from-amber-400 to-amber-600 rounded-full animate-pulse"></span>
               </div>
-              
+
               {/* Luxury Heading */}
               <h2 className="luxury-heading text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-amber-900 via-amber-700 to-amber-900 bg-clip-text text-transparent mb-8 animate-text-reveal">
                 WORLD CLASS AMENITIES
               </h2>
-              
+
               {/* Decorative Divider */}
               <div className="flex items-center justify-center gap-4 mb-8">
                 <div className="h-px w-20 bg-gradient-to-r from-transparent to-amber-400"></div>
@@ -1208,7 +1379,7 @@ export default function Home() {
                 <div className="w-3 h-3 rotate-45 border-2 border-amber-500"></div>
                 <div className="h-px w-20 bg-gradient-to-r from-amber-400 to-transparent"></div>
               </div>
-              
+
               <p className="mt-6 text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed font-light">
                 Redefining Kandivali's skyline with <span className="font-semibold text-amber-700">18.6 Acres</span> of land parcel & just <span className="font-semibold text-amber-700">6 towers</span>. Discover an endless vacation in your dream home.
               </p>
@@ -1224,7 +1395,7 @@ export default function Home() {
                 <div className="absolute top-4 right-4 z-10 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
                   EXCLUSIVE
                 </div>
-                
+
                 <div className="relative h-64 overflow-hidden">
                   <div className="absolute inset-0 overflow-hidden">
                     <div className="flex h-full transition-transform duration-700 ease-in-out">
@@ -1314,7 +1485,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {/* Image 1 */}
-            <div className="reveal group relative overflow-hidden rounded-3xl shadow-2xl cursor-pointer h-[550px] border-2 border-amber-100/50 hover:border-amber-300/80 transition-all duration-700" style={{animationDelay: '0.1s'}}>
+            <div className="reveal group relative overflow-hidden rounded-3xl shadow-2xl cursor-pointer h-[550px] border-2 border-amber-100/50 hover:border-amber-300/80 transition-all duration-700" style={{ animationDelay: '0.1s' }}>
               <img
                 src="/Creative For post ads and etc/1.png"
                 alt="Premium Feature 1"
@@ -1322,7 +1493,7 @@ export default function Home() {
               />
               {/* Luxury gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-40 group-hover:opacity-70 transition-all duration-500"></div>
-              
+
               {/* Blur overlay on hover */}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-500 backdrop-blur-0 group-hover:backdrop-blur-[2px]">
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-6 group-hover:translate-y-0">
@@ -1335,19 +1506,19 @@ export default function Home() {
                   </button>
                 </div>
               </div>
-              
+
               {/* Shimmer effect */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
               </div>
-              
+
               {/* Gold corner accents */}
               <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
 
             {/* Image 2 */}
-            <div className="reveal group relative overflow-hidden rounded-3xl shadow-2xl cursor-pointer h-[550px] border-2 border-amber-100/50 hover:border-amber-300/80 transition-all duration-700" style={{animationDelay: '0.2s'}}>
+            <div className="reveal group relative overflow-hidden rounded-3xl shadow-2xl cursor-pointer h-[550px] border-2 border-amber-100/50 hover:border-amber-300/80 transition-all duration-700" style={{ animationDelay: '0.2s' }}>
               <img
                 src="/Creative For post ads and etc/2.png"
                 alt="Premium Feature 2"
@@ -1355,7 +1526,7 @@ export default function Home() {
               />
               {/* Luxury gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-40 group-hover:opacity-70 transition-all duration-500"></div>
-              
+
               {/* Blur overlay on hover */}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-500 backdrop-blur-0 group-hover:backdrop-blur-[2px]">
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-6 group-hover:translate-y-0">
@@ -1368,19 +1539,19 @@ export default function Home() {
                   </button>
                 </div>
               </div>
-              
+
               {/* Shimmer effect */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
               </div>
-              
+
               {/* Gold corner accents */}
               <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
 
             {/* Image 3 */}
-            <div className="reveal group relative overflow-hidden rounded-3xl shadow-2xl cursor-pointer h-[550px] border-2 border-amber-100/50 hover:border-amber-300/80 transition-all duration-700" style={{animationDelay: '0.3s'}}>
+            <div className="reveal group relative overflow-hidden rounded-3xl shadow-2xl cursor-pointer h-[550px] border-2 border-amber-100/50 hover:border-amber-300/80 transition-all duration-700" style={{ animationDelay: '0.3s' }}>
               <img
                 src="/Creative For post ads and etc/3.png"
                 alt="Premium Feature 3"
@@ -1388,12 +1559,12 @@ export default function Home() {
               />
               {/* Luxury gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-40 group-hover:opacity-70 transition-all duration-500"></div>
-              
+
               {/* Blur overlay on hover */}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-500 backdrop-blur-0 group-hover:backdrop-blur-[2px]">
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-6 group-hover:translate-y-0">
                   <button className="relative bg-white/95 text-amber-700 px-6 py-2.5 rounded-full font-semibold text-sm shadow-2xl hover:shadow-amber-500/30 hover:scale-110 transition-all duration-300 flex items-center gap-2 border-2 border-amber-200 hover:border-amber-400">
-                    <span className="relative z-10">View Details</span>
+                    <span className="relative z-10">View 360 Tour</span>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 relative z-10" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
@@ -1401,12 +1572,12 @@ export default function Home() {
                   </button>
                 </div>
               </div>
-              
+
               {/* Shimmer effect */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
               </div>
-              
+
               {/* Gold corner accents */}
               <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -1432,12 +1603,12 @@ export default function Home() {
               <span className="text-sm font-medium bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent tracking-widest uppercase">Prime Location</span>
               <span className="w-2 h-2 bg-gradient-to-r from-amber-400 to-amber-600 rounded-full"></span>
             </div>
-            
+
             {/* Luxury Heading */}
             <h2 className="luxury-heading text-4xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-amber-900 via-amber-700 to-amber-900 bg-clip-text text-transparent mb-8 animate-text-reveal">
               LOCATION & CONNECTIVITY
             </h2>
-            
+
             {/* Decorative Divider */}
             <div className="flex items-center justify-center gap-4 mb-8">
               <div className="h-px w-20 bg-gradient-to-r from-transparent to-amber-400"></div>
@@ -1446,7 +1617,7 @@ export default function Home() {
               <div className="w-3 h-3 rotate-45 border-2 border-amber-500"></div>
               <div className="h-px w-20 bg-gradient-to-r from-amber-400 to-transparent"></div>
             </div>
-            
+
             <p className="mt-6 text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed font-light">
               Strategically located in <span className="font-semibold text-amber-700">Kandivali East</span>, Mumbai's most sought-after neighborhood with unparalleled connectivity.
             </p>
@@ -1454,11 +1625,11 @@ export default function Home() {
 
           {/* Main Content Grid - SWAPPED: Info Box Left, Map Right */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
-            
+
             {/* Left Side - Compact Info Box (2 columns) */}
             <div className="reveal-left lg:col-span-2">
               <div className="bg-white rounded-2xl shadow-2xl border-3 border-amber-200 overflow-hidden h-[700px] flex flex-col">
-                
+
                 {/* Scrollable Content Container */}
                 <div className="overflow-y-auto flex-1 custom-scrollbar" style={{
                   scrollBehavior: 'smooth',
@@ -1548,7 +1719,7 @@ export default function Home() {
                     </div>
                     <div className="space-y-1.5">
                       {[
-                    
+
                         { name: 'Centrium Mall', time: '8 min' },
                         { name: 'Sachin Tendulkar Gymkhana', time: '9 min' },
                         { name: 'Oberoi Mall', time: '10 min' },
@@ -1599,77 +1770,77 @@ export default function Home() {
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border-3 border-amber-200 hover:border-amber-400 transition-all duration-500 group">
                 {/* Premium Map Container */}
                 <div className="relative h-[700px] bg-gradient-to-br from-amber-50 via-white to-amber-50">
-                  
+
                   {/* Custom Illustrated Map */}
                   <div className="absolute inset-0 overflow-hidden bg-gradient-to-br from-amber-50 via-white to-blue-50">
                     {/* Map Background Pattern */}
                     <svg className="absolute inset-0 w-full h-full opacity-20" xmlns="http://www.w3.org/2000/svg">
                       <defs>
                         <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d4a574" strokeWidth="0.5"/>
+                          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d4a574" strokeWidth="0.5" />
                         </pattern>
                       </defs>
                       <rect width="100%" height="100%" fill="url(#grid)" />
                     </svg>
-                    
+
                     {/* Main Roads */}
                     <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 700" xmlns="http://www.w3.org/2000/svg">
                       {/* Vertical Main Road */}
-                      <line x1="400" y1="0" x2="400" y2="700" stroke="#d4a574" strokeWidth="8" opacity="0.6"/>
-                      <line x1="400" y1="0" x2="400" y2="700" stroke="#f5f5f5" strokeWidth="4" opacity="0.8"/>
-                      
+                      <line x1="400" y1="0" x2="400" y2="700" stroke="#d4a574" strokeWidth="8" opacity="0.6" />
+                      <line x1="400" y1="0" x2="400" y2="700" stroke="#f5f5f5" strokeWidth="4" opacity="0.8" />
+
                       {/* Horizontal Main Road */}
-                      <line x1="0" y1="350" x2="800" y2="350" stroke="#d4a574" strokeWidth="8" opacity="0.6"/>
-                      <line x1="0" y1="350" x2="800" y2="350" stroke="#f5f5f5" strokeWidth="4" opacity="0.8"/>
-                      
+                      <line x1="0" y1="350" x2="800" y2="350" stroke="#d4a574" strokeWidth="8" opacity="0.6" />
+                      <line x1="0" y1="350" x2="800" y2="350" stroke="#f5f5f5" strokeWidth="4" opacity="0.8" />
+
                       {/* Secondary Roads */}
-                      <line x1="200" y1="0" x2="200" y2="700" stroke="#d4a574" strokeWidth="3" opacity="0.4"/>
-                      <line x1="600" y1="0" x2="600" y2="700" stroke="#d4a574" strokeWidth="3" opacity="0.4"/>
-                      <line x1="0" y1="200" x2="800" y2="200" stroke="#d4a574" strokeWidth="3" opacity="0.4"/>
-                      <line x1="0" y1="500" x2="800" y2="500" stroke="#d4a574" strokeWidth="3" opacity="0.4"/>
-                      
+                      <line x1="200" y1="0" x2="200" y2="700" stroke="#d4a574" strokeWidth="3" opacity="0.4" />
+                      <line x1="600" y1="0" x2="600" y2="700" stroke="#d4a574" strokeWidth="3" opacity="0.4" />
+                      <line x1="0" y1="200" x2="800" y2="200" stroke="#d4a574" strokeWidth="3" opacity="0.4" />
+                      <line x1="0" y1="500" x2="800" y2="500" stroke="#d4a574" strokeWidth="3" opacity="0.4" />
+
                       {/* Water Body */}
-                      <ellipse cx="250" cy="450" rx="80" ry="60" fill="#c9e6f5" opacity="0.6"/>
-                      <ellipse cx="250" cy="450" rx="70" ry="50" fill="#b3ddf2" opacity="0.4"/>
-                      
+                      <ellipse cx="250" cy="450" rx="80" ry="60" fill="#c9e6f5" opacity="0.6" />
+                      <ellipse cx="250" cy="450" rx="70" ry="50" fill="#b3ddf2" opacity="0.4" />
+
                       {/* Green Spaces */}
-                      <rect x="520" y="120" width="60" height="60" fill="#d4edda" opacity="0.5" rx="5"/>
-                      <rect x="100" y="550" width="50" height="50" fill="#d4edda" opacity="0.5" rx="5"/>
-                      
+                      <rect x="520" y="120" width="60" height="60" fill="#d4edda" opacity="0.5" rx="5" />
+                      <rect x="100" y="550" width="50" height="50" fill="#d4edda" opacity="0.5" rx="5" />
+
                       {/* Central Location Marker (Godrej Reserve) */}
-                      <circle cx="400" cy="350" r="30" fill="#dc3545" opacity="0.9"/>
-                      <circle cx="400" cy="350" r="25" fill="#fff" opacity="0.3"/>
-                      <circle cx="400" cy="350" r="8" fill="#fff"/>
-                      
+                      <circle cx="400" cy="350" r="30" fill="#dc3545" opacity="0.9" />
+                      <circle cx="400" cy="350" r="25" fill="#fff" opacity="0.3" />
+                      <circle cx="400" cy="350" r="8" fill="#fff" />
+
                       {/* Location Pin */}
-                      <path d="M 400 320 L 400 350 L 385 365 L 400 380 L 415 365 Z" fill="#dc3545" opacity="0.8"/>
+                      <path d="M 400 320 L 400 350 L 385 365 L 400 380 L 415 365 Z" fill="#dc3545" opacity="0.8" />
                     </svg>
-                    
+
                     {/* Location Labels */}
                     <div className="absolute inset-0 pointer-events-none">
                       {/* Kandivali East Label */}
-                      <div className="absolute" style={{top: '45%', left: '52%', transform: 'translate(-50%, -50%)'}}>
+                      <div className="absolute" style={{ top: '45%', left: '52%', transform: 'translate(-50%, -50%)' }}>
                         <div className="bg-white/90 px-3 py-1.5 rounded-lg shadow-lg border-2 border-amber-300">
                           <p className="text-xs font-bold text-amber-700 uppercase tracking-wider">Kandivali East</p>
                         </div>
                       </div>
-                      
+
                       {/* Nearby Areas */}
                       <div className="absolute top-20 left-20 bg-white/80 px-2 py-1 rounded text-xs text-gray-600 shadow">Kandivali West</div>
                       <div className="absolute top-20 right-20 bg-white/80 px-2 py-1 rounded text-xs text-gray-600 shadow">Thakur Village</div>
                       <div className="absolute bottom-20 left-32 bg-white/80 px-2 py-1 rounded text-xs text-gray-600 shadow">Malad</div>
                       <div className="absolute bottom-32 right-32 bg-white/80 px-2 py-1 rounded text-xs text-gray-600 shadow">Hanuman Nagar</div>
-                      
+
                       {/* Metro Stations */}
-                      <div className="absolute" style={{top: '35%', left: '48%'}}>
+                      <div className="absolute" style={{ top: '35%', left: '48%' }}>
                         <div className="w-3 h-3 bg-blue-600 rounded-full border-2 border-white shadow-lg"></div>
                       </div>
-                      <div className="absolute" style={{top: '55%', left: '38%'}}>
+                      <div className="absolute" style={{ top: '55%', left: '38%' }}>
                         <div className="w-3 h-3 bg-blue-600 rounded-full border-2 border-white shadow-lg"></div>
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Luxury Corner Decorations */}
                   <div className="absolute inset-0 pointer-events-none z-10">
                     <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-amber-500"></div>
@@ -1738,7 +1909,7 @@ export default function Home() {
                   </svg>
                 </div>
                 <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 group-hover:text-amber-700 transition-colors duration-300">
-                  Floor Plans 
+                  Floor Plans
                 </h3>
                 <p className="text-gray-600 text-sm mb-4">
                   Discover elegant 2, 3 and 4 BHK layouts crafted for premium living with smart space planning.
@@ -1853,35 +2024,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------------- CTA (Booking) ---------------- */}
-      {/* <section
-        id="booking"
-        className="relative py-16 bg-gradient-to-r from-[#a67d4b] to-[#ad9989] text-white text-center fade-in"
-      >
-        <div className="max-w-3xl mx-auto px-6">
-          <h2 className="text-3xl font-heading mb-4">Book Your Site Visit Today</h2>
-          <p className="text-gray-200 mb-8">
-            Schedule a visit and explore the elegance of Godrej Reserve. Limited units available!
-          </p>
-          <a
-            href="#contact"
-            className="bg-[#F9F8F6] text-[#a67d4b] px-8 py-3 rounded-lg shadow hover:bg-white hover:text-[#a67d4b] transition"
-          >
-            Contact Sales Team
-          </a>
-        </div>
-      </section> */}
 
-      {/* ---------------- FOOTER ---------------- */}
-      {/* <footer
-        id="contact"
-        className="bg-[#F9F8F6] border-t border-[#EFE9E3] py-8 text-center text-gray-600"
-      >
-        <p>
-          © {new Date().getFullYear()} Godrej Project — Kandivali East | Designed by{" "}
-          <span className="text-[#a67d4b] font-semibold">Ajinkya Dhumal</span>
-        </p>
-      </footer> */}
 
       {/* Gallery Modal */}
       <GalleryModal
@@ -1927,11 +2070,10 @@ export default function Home() {
                   className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-2xl ${
-                      msg.type === 'user'
+                    className={`max-w-[80%] p-3 rounded-2xl ${msg.type === 'user'
                         ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-br-none'
                         : 'bg-white text-gray-800 shadow-md rounded-bl-none border border-gray-200'
-                    }`}
+                      }`}
                   >
                     <p className="text-sm whitespace-pre-line">{msg.text}</p>
                   </div>
@@ -2016,31 +2158,74 @@ export default function Home() {
                   {/* Antenna */}
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-0.5 h-2 bg-white"></div>
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-white rounded-full animate-ping"></div>
-                  
+
                   {/* Head */}
                   <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg border-2 border-white/40 flex items-center justify-center">
                     {/* Eyes */}
                     <div className="flex gap-2">
                       <div className="w-2 h-2 bg-white rounded-full animate-blink"></div>
-                      <div className="w-2 h-2 bg-white rounded-full animate-blink" style={{animationDelay: '0.1s'}}></div>
+                      <div className="w-2 h-2 bg-white rounded-full animate-blink" style={{ animationDelay: '0.1s' }}></div>
                     </div>
                   </div>
-                  
+
                   {/* Smile */}
                   <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-5 h-1.5 border-b-2 border-white rounded-full"></div>
                 </div>
               </div>
-              
+
               {/* Notification Badge with Wave */}
               <span className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold shadow-lg animate-bounce">
                 💬
               </span>
-              
+
               {/* Pulse Ring */}
               <span className="absolute inset-0 rounded-full bg-amber-400 opacity-75 animate-ping"></span>
             </>
           )}
         </button>
+
+        {/* ---------------- CTA (Booking) ---------------- */}
+        {/* {<section
+        id="booking"
+        className="relative py-16 bg-gradient-to-r from-[#a67d4b] to-[#ad9989] text-white text-center fade-in"
+      >
+        <div className="max-w-3xl mx-auto px-6">
+          <h2 className="text-3xl font-heading mb-4">Book Your Site Visit Today</h2>
+          <p className="text-gray-200 mb-8">
+            Schedule a visit and explore the elegance of Godrej Reserve. Limited units available!
+          </p>
+          <a
+            href="#contact"
+            className="bg-[#F9F8F6] text-[#a67d4b] px-8 py-3 rounded-lg shadow hover:bg-white hover:text-[#a67d4b] transition"
+          >
+            Contact Sales Team
+          </a>
+        </div>
+      </section> }
+
+      {/* Auto-Popup Contact Form */}
+      <ContactForm 
+        isOpen={showContactForm} 
+        onClose={hideContactForm}
+        markAsSubmitted={markAsSubmitted}
+      />
+
+      {/* Schedule Visit Form */}
+      <ScheduleVisitForm 
+        isOpen={showScheduleVisitForm} 
+        onClose={() => setShowScheduleVisitForm(false)}
+      />
+
+      {/* ---------------- FOOTER ---------------- */}
+        {/* { <footer
+        id="contact"
+        className="bg-[#F9F8F6] border-t border-[#EFE9E3] py-8 text-center text-gray-600"
+      >
+        <p>
+          © {new Date().getFullYear()} Godrej Project — Kandivali East | Designed by{" "}
+          <span className="text-[#a67d4b] font-semibold">Ajinkya Dhumal</span>
+        </p>
+      </footer> }  */}
       </div>
     </>
   );
