@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Cormorant_Garamond } from 'next/font/google';
 import ContactForm from './components/ContactForm';
 import ScheduleVisitForm from './components/ScheduleVisitForm';
+import Footer from './components/Footer';
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -662,30 +663,42 @@ export default function Home() {
 
           <div className="relative max-w-7xl mx-auto px-6">
             <div className="flex items-center justify-between h-20">
-              {/* Brand Name with Partner Badge */}
-              <div className="flex items-start space-x-6 h-full">
-                <a href="#home" className="relative z-10 flex items-center h-full">
-                  <div className="pt-4">
-                    <div className="flex items-start">
-                      <Image 
-                        src="/Layer 5.png" 
-                        alt="Godrej Reserve Logo" 
-                        width={290} 
-                        height={70}
-                        
-                        className="object-contain -ml-20 mt-6"
-                      />
-
-                      <p className="ml-4 mt-3 text-sm font-medium  text-gray-600 px-3 py-1 rounded-full ">
-                        PREFERRED PARTNER
-                      </p>
-                    </div>
-                    <p className="text-xs text-gray-600 font-medium -mt-2 flex items-center">
-                      <span className="inline-block w-1.5 h-1.5 bg-amber-600 rounded-full mr-2"></span>
-                      Kandivali East, Mumbai
-                    </p>
+              {/* Brand Section with Logo, Badge & Location */}
+              <div className="flex items-center gap-4 h-full py-3">
+                <a href="#home" className="relative z-10 flex items-center">
+                  {/* Logo */}
+                  <div className="flex flex-col">
+                    <Image 
+                      src="/Layer 5.png" 
+                      alt="Godrej Reserve Logo" 
+                      width={280} 
+                      height={70}
+                      className="object-contain w-[220px] sm:w-[240px] md:w-[260px] lg:w-[280px] h-auto"
+                      priority
+                    />
                   </div>
                 </a>
+                
+                {/* Vertical Divider */}
+                <div className="h-12 w-px bg-gradient-to-b from-transparent via-gray-300 to-transparent"></div>
+                
+                {/* Badge and Location */}
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex items-center">
+                    <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold text-amber-700 bg-amber-50 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-amber-200">
+                      <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                      <span className="whitespace-nowrap">PREFERRED PARTNER</span>
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-700">
+                    <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="font-semibold whitespace-nowrap">Kandivali East, Mumbai</span>
+                  </div>
+                </div>
               </div>
 
               {/* Desktop Nav Links - Enhanced */}
@@ -718,7 +731,7 @@ export default function Home() {
                 <div className="ml-4 relative group">
                   <button
                     onClick={() => setShowScheduleVisitForm(true)}
-                    className="relative px-5 py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white text-sm font-medium rounded-lg overflow-hidden group-hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300 transform group-hover:-translate-y-0.5 flex items-center border border-white/20 hover:border-white/30"
+                    className="relative px-6 py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white text-sm font-medium rounded-lg overflow-hidden group-hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300 transform group-hover:-translate-y-0.5 flex items-center border border-white/20 hover:border-white/30 whitespace-nowrap"
                   >
                     <span className="relative z-10 flex items-center">
                       <span>Schedule Visit</span>
@@ -834,7 +847,7 @@ export default function Home() {
           {/* Subheading */}
           <div className="relative max-w-2xl mx-auto">
             <p className="text-gray-100 text-lg md:text-xl leading-relaxed font-light mb-8">
-              Discover <span className="font-medium text-white font-bold">unparalleled elegance</span> at Godrej Reserve, where modern design meets timeless luxury in the heart of Kandivali East.
+              Discover <span className="font-bold text-white">unparalleled elegance</span> at Godrej Reserve, where modern design meets timeless luxury in the heart of Kandivali East.
             </p>
 
             {/* Divider */}
@@ -2023,8 +2036,11 @@ export default function Home() {
         title={galleryModalTitle}
       />
 
-      {/* Chatbot Widget */}
-      <div className="fixed bottom-6 right-6 z-50">
+      {/* Premium Footer - At the end of all sections */}
+      <Footer />
+
+      {/* Chatbot Widget - Fixed position, outside main container */}
+      <div className="fixed bottom-6 right-6 z-[60]">
         {/* Chat Window */}
         {chatbotOpen && (
           <div className="mb-4 w-96 h-[600px] bg-white rounded-2xl shadow-2xl border-2 border-amber-200 flex flex-col overflow-hidden animate-slideUp">
@@ -2132,10 +2148,10 @@ export default function Home() {
         {/* Floating Chat Button */}
         <button
           onClick={() => setChatbotOpen(!chatbotOpen)}
-          className="bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-white w-20 h-20 rounded-full shadow-2xl hover:shadow-amber-500/50 hover:scale-110 transition-all duration-300 flex items-center justify-center relative group animate-bounce-slow"
+          className="bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-white w-16 h-16 rounded-full shadow-2xl hover:shadow-amber-500/50 hover:scale-110 transition-all duration-300 flex items-center justify-center relative group"
         >
           {chatbotOpen ? (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>
           ) : (
@@ -2149,11 +2165,11 @@ export default function Home() {
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-white rounded-full animate-ping"></div>
 
                   {/* Head */}
-                  <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg border-2 border-white/40 flex items-center justify-center">
+                  <div className="w-9 h-9 bg-white/20 backdrop-blur-sm rounded-lg border-2 border-white/40 flex items-center justify-center">
                     {/* Eyes */}
                     <div className="flex gap-2">
-                      <div className="w-2 h-2 bg-white rounded-full animate-blink"></div>
-                      <div className="w-2 h-2 bg-white rounded-full animate-blink" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
                     </div>
                   </div>
 
@@ -2163,7 +2179,7 @@ export default function Home() {
               </div>
 
               {/* Notification Badge with Wave */}
-              <span className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold shadow-lg animate-bounce">
+              <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold shadow-lg">
                 💬
               </span>
 
@@ -2172,50 +2188,20 @@ export default function Home() {
             </>
           )}
         </button>
+      </div>
 
-        {/* ---------------- CTA (Booking) ---------------- */}
-        {/* {<section
-        id="booking"
-        className="relative py-16 bg-gradient-to-r from-[#a67d4b] to-[#ad9989] text-white text-center fade-in"
-      >
-        <div className="max-w-3xl mx-auto px-6">
-          <h2 className="text-3xl font-heading mb-4">Book Your Site Visit Today</h2>
-          <p className="text-gray-200 mb-8">
-            Schedule a visit and explore the elegance of Godrej Reserve. Limited units available!
-          </p>
-          <a
-            href="#contact"
-            className="bg-[#F9F8F6] text-[#a67d4b] px-8 py-3 rounded-lg shadow hover:bg-white hover:text-[#a67d4b] transition"
-          >
-            Contact Sales Team
-          </a>
-        </div>
-      </section> }
-
-      {/* Auto-Popup Contact Form */}
+      {/* Auto-Popup Contact Form - Outside main container */}
       <ContactForm 
         isOpen={showContactForm} 
         onClose={hideContactForm}
         markAsSubmitted={markAsSubmitted}
       />
 
-      {/* Schedule Visit Form */}
+      {/* Schedule Visit Form - Outside main container */}
       <ScheduleVisitForm 
         isOpen={showScheduleVisitForm} 
         onClose={() => setShowScheduleVisitForm(false)}
       />
-
-      {/* ---------------- FOOTER ---------------- */}
-        {/* { <footer
-        id="contact"
-        className="bg-[#F9F8F6] border-t border-[#EFE9E3] py-8 text-center text-gray-600"
-      >
-        <p>
-          © {new Date().getFullYear()} Godrej Project — Kandivali East | Designed by{" "}
-          <span className="text-[#a67d4b] font-semibold">Ajinkya Dhumal</span>
-        </p>
-      </footer> }  */}
-      </div>
     </>
   );
 }
