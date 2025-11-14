@@ -4,6 +4,113 @@ import { NextResponse } from 'next/server';
 // MongoDB configuration - REQUIRED
 const MONGODB_URI = process.env.MONGODB_URI;
 
+// Email configuration (optional - for sending confirmation emails)
+const SMTP_ENABLED = process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS;
+
+// Send visit confirmation email (if SMTP is configured)
+async function sendVisitConfirmationEmail(visitData) {
+  if (!SMTP_ENABLED) {
+    console.log('📧 SMTP not configured - skipping email send');
+    return { sent: false, reason: 'SMTP not configured' };
+  }
+
+  try {
+    const nodemailer = await import('nodemailer');
+    
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || '587'),
+      secure: process.env.SMTP_SECURE === 'true',
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    // Parse email from fullName or use a default contact method
+    const recipientEmail = visitData.email || process.env.NOTIFICATION_EMAIL;
+    
+    if (!recipientEmail) {
+      console.log('⚠️ No recipient email available for visit confirmation');
+      return { sent: false, reason: 'No recipient email' };
+    }
+
+    const visitDate = new Date(visitData.preferredDate).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    const mailOptions = {
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      to: recipientEmail,
+      subject: 'Visit Scheduled - Godrej Reserve',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+            .highlight { background: #fff7ed; padding: 15px; border-left: 4px solid #d97706; margin: 20px 0; border-radius: 4px; }
+            .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>✓ Visit Scheduled</h1>
+            </div>
+            <div class="content">
+              <p>Dear ${visitData.fullName},</p>
+              <p>Your property visit has been successfully scheduled for <strong>Godrej Reserve</strong>.</p>
+              
+              <div class="highlight">
+                <h3 style="margin-top: 0;">Visit Details:</h3>
+                <ul style="margin-bottom: 0;">
+                  <li><strong>Date:</strong> ${visitDate}</li>
+                  <li><strong>Name:</strong> ${visitData.fullName}</li>
+                  <li><strong>Phone:</strong> ${visitData.fullPhoneNumber}</li>
+                  <li><strong>Country:</strong> ${visitData.country}</li>
+                </ul>
+              </div>
+              
+              <p>Our property consultant will contact you at <strong>${visitData.fullPhoneNumber}</strong> within 24 hours to confirm the exact time and provide you with:</p>
+              <ul>
+                <li>Detailed visit schedule</li>
+                <li>Location and directions</li>
+                <li>What to expect during your visit</li>
+                <li>Property documentation to review</li>
+              </ul>
+              
+              <p><strong>Important:</strong> If you need to reschedule or have any questions, please contact us immediately.</p>
+              
+              <p>We look forward to showing you your future home!</p>
+              
+              <p>Best regards,<br>
+              <strong>Godrej Reserve Sales Team</strong></p>
+            </div>
+            <div class="footer">
+              <p>This is an automated confirmation email. Please do not reply directly to this message.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log('✅ Visit confirmation email sent to:', recipientEmail);
+    return { sent: true };
+  } catch (error) {
+    console.error('❌ Email sending error:', error);
+    return { sent: false, error: error.message };
+  }
+}
+
 if (!MONGODB_URI) {
   console.error('❌ MONGODB_URI is missing from .env.local file');
 }
@@ -127,12 +234,16 @@ export async function POST(request) {
     // Insert new visit request
     const insertResult = await collection.insertOne(visitDocument);
 
+    // Send confirmation email
+    const emailResult = await sendVisitConfirmationEmail(visitDocument);
+
     return NextResponse.json({
       success: true,
       message: 'Visit scheduled successfully',
       visitId: insertResult.insertedId,
       preferredDate: visitDocument.preferredDate,
-      status: 'pending'
+      status: 'pending',
+      emailSent: emailResult.sent
     });
 
   } catch (error) {

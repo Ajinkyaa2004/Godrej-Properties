@@ -36,6 +36,8 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 3;
 
   // Validation functions
   const validateEmail = (email) => {
@@ -117,7 +119,7 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
     };
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, isRetry = false) => {
     e.preventDefault();
     
     if (!validateForm()) {
@@ -125,6 +127,7 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
     }
 
     setIsSubmitting(true);
+    setErrors(prev => ({ ...prev, submit: '' }));
 
     try {
       // First check if user already exists in database
@@ -139,6 +142,10 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
           ipAddress: window.location.href
         }),
       });
+
+      if (!checkResponse.ok) {
+        throw new Error(`Server error: ${checkResponse.status}`);
+      }
 
       const checkResult = await checkResponse.json();
       
@@ -178,39 +185,81 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
         body: JSON.stringify(submitData),
       });
 
-      if (response.ok) {
-        // Mark as submitted immediately to prevent showing again
-        if (markAsSubmitted) {
-          markAsSubmitted();
-        }
-        
-        setSubmitSuccess(true);
-        setTimeout(() => {
-          setSubmitSuccess(false);
-          onClose();
-          // Reset form
-          setFormData({
-            firstName: '',
-            lastName: '',
-            countryCode: '+91',
-            phoneNumber: '',
-            email: '',
-            country: 'India',
-          });
-        }, 2000);
-      } else {
-        throw new Error('Failed to submit form');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Server error: ${response.status}`);
       }
+
+      const result = await response.json();
+      
+      // Mark as submitted immediately to prevent showing again
+      if (markAsSubmitted) {
+        markAsSubmitted();
+      }
+      
+      setSubmitSuccess(true);
+      setRetryCount(0);
+      
+      setTimeout(() => {
+        setSubmitSuccess(false);
+        onClose();
+        // Reset form
+        setFormData({
+          firstName: '',
+          lastName: '',
+          countryCode: '+91',
+          phoneNumber: '',
+          email: '',
+          country: 'India',
+        });
+      }, 2000);
     } catch (error) {
       console.error('Form submission error:', error);
-      setErrors({ submit: 'Failed to submit form. Please try again.' });
+      
+      let errorMessage = 'An unexpected error occurred. ';
+      
+      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+        errorMessage = 'Network connection issue. Please check your internet connection. ';
+      } else if (error.message.includes('500')) {
+        errorMessage = 'Server error. Our team has been notified. ';
+      } else if (error.message.includes('400')) {
+        errorMessage = 'Invalid form data. Please check your inputs. ';
+      } else if (error.message) {
+        errorMessage = error.message + ' ';
+      }
+      
+      setErrors({ 
+        submit: errorMessage,
+        canRetry: retryCount < MAX_RETRIES && !error.message.includes('400')
+      });
+      
+      if (!isRetry) {
+        setRetryCount(prev => prev + 1);
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleRetry = (e) => {
+    e.preventDefault();
+    handleSubmit(e, true);
+  };
+
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const newData = { ...prev, [field]: value };
+      
+      // Auto-sync country code when country changes
+      if (field === 'country') {
+        const selectedCountry = countries.find(c => c.name === value);
+        if (selectedCountry) {
+          newData.countryCode = selectedCountry.code;
+        }
+      }
+      
+      return newData;
+    });
     
     // Clear error for this field when user starts typing
     if (errors[field]) {
@@ -243,7 +292,7 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-800 mb-2">Thank You!</h3>
-              <p className="text-gray-600">Your information has been submitted successfully.</p>
+              <p className="text-gray-600 text-sm px-4">Your information has been submitted successfully. You'll receive a confirmation email shortly with property details.</p>
             </div>
           </div>
         )}
@@ -385,9 +434,18 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
               <div className={`text-sm text-center mt-2 p-3 rounded-lg ${
                 errors.submit.includes('already been processed') 
                   ? 'bg-amber-50 text-amber-700 border border-amber-200' 
-                  : 'text-red-500'
+                  : 'bg-red-50 text-red-700 border border-red-200'
               }`}>
-                {errors.submit}
+                <p>{errors.submit}</p>
+                {errors.canRetry && (
+                  <button
+                    onClick={handleRetry}
+                    disabled={isSubmitting}
+                    className="mt-2 text-xs underline hover:no-underline disabled:opacity-50"
+                  >
+                    {retryCount > 0 ? `Retry (${retryCount}/${MAX_RETRIES})` : 'Retry'}
+                  </button>
+                )}
               </div>
             )}
           </form>

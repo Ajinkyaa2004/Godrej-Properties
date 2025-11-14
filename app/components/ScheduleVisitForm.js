@@ -33,6 +33,8 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 3;
 
   // Validation functions
   const validatePhone = (phone) => {
@@ -89,7 +91,7 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
     };
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, isRetry = false) => {
     e.preventDefault();
     
     if (!validateForm()) {
@@ -97,6 +99,7 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
     }
 
     setIsSubmitting(true);
+    setErrors(prev => ({ ...prev, submit: '' }));
 
     try {
       const hiddenFields = captureHiddenFields();
@@ -115,33 +118,82 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
         body: JSON.stringify(submitData),
       });
 
-      if (response.ok) {
-        setSubmitSuccess(true);
-        setTimeout(() => {
-          setSubmitSuccess(false);
-          onClose();
-          // Reset form
-          setFormData({
-            fullName: '',
-            countryCode: '+91',
-            phoneNumber: '',
-            preferredDate: '',
-            country: 'India',
-          });
-        }, 3000);
-      } else {
-        throw new Error('Failed to schedule visit');
+      if (!response.ok) {
+        const errorData = await response.json();
+        
+        if (response.status === 409) {
+          throw new Error('A visit is already scheduled for this date. Please choose a different date.');
+        }
+        
+        throw new Error(errorData.error || `Server error: ${response.status}`);
       }
+
+      const result = await response.json();
+      
+      setSubmitSuccess(true);
+      setRetryCount(0);
+      
+      setTimeout(() => {
+        setSubmitSuccess(false);
+        onClose();
+        // Reset form
+        setFormData({
+          fullName: '',
+          countryCode: '+91',
+          phoneNumber: '',
+          preferredDate: '',
+          country: 'India',
+        });
+      }, 3000);
     } catch (error) {
       console.error('Schedule visit submission error:', error);
-      setErrors({ submit: 'Failed to schedule visit. Please try again.' });
+      
+      let errorMessage = 'An unexpected error occurred. ';
+      
+      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+        errorMessage = 'Network connection issue. Please check your internet connection. ';
+      } else if (error.message.includes('500')) {
+        errorMessage = 'Server error. Our team has been notified. ';
+      } else if (error.message.includes('already scheduled')) {
+        errorMessage = error.message;
+      } else if (error.message.includes('400')) {
+        errorMessage = 'Invalid form data. Please check your inputs. ';
+      } else if (error.message) {
+        errorMessage = error.message + ' ';
+      }
+      
+      setErrors({ 
+        submit: errorMessage,
+        canRetry: retryCount < MAX_RETRIES && !error.message.includes('400') && !error.message.includes('already scheduled')
+      });
+      
+      if (!isRetry) {
+        setRetryCount(prev => prev + 1);
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleRetry = (e) => {
+    e.preventDefault();
+    handleSubmit(e, true);
+  };
+
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const newData = { ...prev, [field]: value };
+      
+      // Auto-sync country code when country changes
+      if (field === 'country') {
+        const selectedCountry = countries.find(c => c.name === value);
+        if (selectedCountry) {
+          newData.countryCode = selectedCountry.code;
+        }
+      }
+      
+      return newData;
+    });
     
     // Clear error for this field when user starts typing
     if (errors[field]) {
@@ -308,7 +360,18 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
             </button>
 
             {errors.submit && (
-              <p className="text-red-500 text-sm text-center mt-2">{errors.submit}</p>
+              <div className="bg-red-50 text-red-700 border border-red-200 text-sm text-center mt-2 p-3 rounded-lg">
+                <p>{errors.submit}</p>
+                {errors.canRetry && (
+                  <button
+                    onClick={handleRetry}
+                    disabled={isSubmitting}
+                    className="mt-2 text-xs underline hover:no-underline disabled:opacity-50"
+                  >
+                    {retryCount > 0 ? `Retry (${retryCount}/${MAX_RETRIES})` : 'Retry'}
+                  </button>
+                )}
+              </div>
             )}
           </form>
 
