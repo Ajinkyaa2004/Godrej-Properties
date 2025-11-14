@@ -15,7 +15,7 @@ async function sendConfirmationEmail(contactData) {
   }
 
   try {
-    const nodemailer = await import('nodemailer');
+    const nodemailer = (await import('nodemailer')).default;
     
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,

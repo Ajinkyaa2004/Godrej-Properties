@@ -27,14 +27,25 @@ export async function POST(request) {
     const db = client.db(DB_NAME);
     const collection = db.collection(COLLECTION_NAME);
 
-    // Check if user already exists by email, phone, or IP
-    const existingContact = await collection.findOne({
-      $or: [
-        { email: email?.toLowerCase().trim() },
-        { phoneNumber: phoneNumber?.trim() },
-        { ipAddress: ipAddress }
-      ]
-    });
+    // Check if contact exists by email or phone number
+    const orConditions = [];
+    if (email && typeof email === 'string') {
+      orConditions.push({ email: email.toLowerCase().trim() });
+    }
+    if (phoneNumber && typeof phoneNumber === 'string') {
+      orConditions.push({ phoneNumber: phoneNumber.trim() });
+    }
+    
+    if (orConditions.length === 0) {
+      return NextResponse.json({
+        exists: false,
+        message: 'No valid identifiers provided'
+      });
+    }
+    
+    const query = { $or: orConditions };
+    
+    const existingContact = await collection.findOne(query);
 
     if (existingContact) {
       return NextResponse.json({
