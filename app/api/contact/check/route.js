@@ -3,8 +3,13 @@ import { NextResponse } from 'next/server';
 
 // MongoDB configuration
 const MONGODB_URI = process.env.MONGODB_URI;
-const client = new MongoClient(MONGODB_URI);
-const clientPromise = client.connect();
+
+let client, clientPromise;
+
+if (MONGODB_URI) {
+  client = new MongoClient(MONGODB_URI);
+  clientPromise = client.connect();
+}
 
 const DB_NAME = 'godrej-reserve';
 const COLLECTION_NAME = 'contacts';
