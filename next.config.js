@@ -13,11 +13,6 @@ const nextConfig = {
   compress: true,
   // Optimize production builds
   swcMinify: true,
-  // Enable experimental features for better performance
-  experimental: {
-    optimizeCss: true,
-    scrollRestoration: true,
-  }
 }
 
 module.exports = nextConfig
