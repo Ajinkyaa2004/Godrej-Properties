@@ -384,12 +384,12 @@ export default function Home() {
           return;
         }
 
-        // Show form after 5 seconds if user hasn't submitted before
-        console.log('User is new, setting 5 second timer for contact form');
+        // Show form after 3 seconds if user hasn't submitted before
+        console.log('User is new, setting 3 second timer for contact form');
         const timer = setTimeout(() => {
-          console.log('5 seconds passed, showing contact form for new user');
+          console.log('3 seconds passed, showing contact form for new user');
           setShowContactForm(true);
-        }, 5000); // 5 seconds
+        }, 3000); // 3 seconds
 
         return () => {
           console.log('Cleaning up contact form timer');
@@ -403,7 +403,7 @@ export default function Home() {
         if (formSubmitted !== 'true') {
           const timer = setTimeout(() => {
             setShowContactForm(true);
-          }, 5000);
+          }, 3000);
           
           return () => clearTimeout(timer);
         }
