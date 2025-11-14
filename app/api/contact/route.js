@@ -182,8 +182,7 @@ export async function POST(request) {
     };
 
     // Connect to MongoDB and save contact
-    await clientPromise;
-    const db = client.db(DB_NAME);
+    const { db } = await connectToDatabase();
     const collection = db.collection(COLLECTION_NAME);
 
     // Check for duplicate email (optional - update existing or create new)
@@ -251,8 +250,7 @@ export async function GET(request) {
     const skip = (page - 1) * limit;
 
     // Connect to MongoDB
-    await clientPromise;
-    const db = client.db(DB_NAME);
+    const { db } = await connectToDatabase();
     const collection = db.collection(COLLECTION_NAME);
 
     // Get contacts from MongoDB

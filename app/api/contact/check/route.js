@@ -3,16 +3,31 @@ import { NextResponse } from 'next/server';
 
 // MongoDB configuration
 const MONGODB_URI = process.env.MONGODB_URI;
-
-let client, clientPromise;
-
-if (MONGODB_URI) {
-  client = new MongoClient(MONGODB_URI);
-  clientPromise = client.connect();
-}
-
 const DB_NAME = 'godrej-reserve';
 const COLLECTION_NAME = 'contacts';
+
+// Lazy connection function
+let cachedClient = null;
+let cachedDb = null;
+
+async function connectToDatabase() {
+  if (!MONGODB_URI) {
+    throw new Error('MONGODB_URI is not defined');
+  }
+
+  if (cachedClient && cachedDb) {
+    return { client: cachedClient, db: cachedDb };
+  }
+
+  const client = new MongoClient(MONGODB_URI);
+  await client.connect();
+  const db = client.db(DB_NAME);
+
+  cachedClient = client;
+  cachedDb = db;
+
+  return { client, db };
+}
 
 export async function POST(request) {
   try {
@@ -23,8 +38,7 @@ export async function POST(request) {
     const { email, phoneNumber, ipAddress } = await request.json();
     
     // Connect to MongoDB
-    await clientPromise;
-    const db = client.db(DB_NAME);
+    const { db } = await connectToDatabase();
     const collection = db.collection(COLLECTION_NAME);
 
     // Check if contact exists by email or phone number
