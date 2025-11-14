@@ -384,28 +384,17 @@ export default function Home() {
           return;
         }
 
-        // Show form after 3 seconds if user hasn't submitted before
-        console.log('User is new, setting 3 second timer for contact form');
-        const timer = setTimeout(() => {
-          console.log('3 seconds passed, showing contact form for new user');
-          setShowContactForm(true);
-        }, 3000); // 3 seconds
-
-        return () => {
-          console.log('Cleaning up contact form timer');
-          clearTimeout(timer);
-        };
+        // Show form immediately after checks
+        console.log('User is new, showing contact form immediately');
+        setShowContactForm(true);
 
       } catch (error) {
         console.error('Failed to check user submission status:', error);
         // Fallback to localStorage check only
         const formSubmitted = localStorage.getItem('contactFormSubmitted');
         if (formSubmitted !== 'true') {
-          const timer = setTimeout(() => {
-            setShowContactForm(true);
-          }, 3000);
-          
-          return () => clearTimeout(timer);
+          console.log('Error occurred but user is new, showing contact form');
+          setShowContactForm(true);
         }
       }
     };
