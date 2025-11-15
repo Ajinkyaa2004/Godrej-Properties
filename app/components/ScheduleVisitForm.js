@@ -288,7 +288,7 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
                 >
                   {countries.map((country) => (
                     <option key={country.code} value={country.code}>
-                      {country.flag} {country.code}
+                      {country.code} ({country.name})
                     </option>
                   ))}
                 </select>

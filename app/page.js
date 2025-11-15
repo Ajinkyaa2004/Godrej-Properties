@@ -349,6 +349,9 @@ export default function Home() {
   
   // Schedule Visit form state
   const [showScheduleVisitForm, setShowScheduleVisitForm] = useState(false);
+  
+  // Gallery access control - tracks if user clicked gallery
+  const [pendingGalleryAccess, setPendingGalleryAccess] = useState(false);
 
   useEffect(() => {
     console.log('ContactForm initialization started');
@@ -410,6 +413,28 @@ export default function Home() {
   const markAsSubmitted = () => {
     localStorage.setItem('contactFormSubmitted', 'true');
     setShowContactForm(false);
+    
+    // If user was trying to access gallery, navigate there now
+    if (pendingGalleryAccess) {
+      setPendingGalleryAccess(false);
+      window.location.href = '/gallery';
+    }
+  };
+  
+  const handleGalleryClick = (e) => {
+    e.preventDefault();
+    
+    // Check if user already submitted form
+    const formSubmitted = localStorage.getItem('contactFormSubmitted');
+    
+    if (formSubmitted === 'true') {
+      // User already filled form, allow direct access
+      window.location.href = '/gallery';
+    } else {
+      // User hasn't filled form, show it first
+      setPendingGalleryAccess(true);
+      setShowContactForm(true);
+    }
   };
 
   // Auto-scroll chat to bottom when messages change
@@ -713,6 +738,7 @@ export default function Home() {
                   <div key={item.name} className="relative group">
                     <a
                       href={item.href}
+                      onClick={item.name === 'Gallery' ? handleGalleryClick : undefined}
                       className={`flex items-center px-5 py-3 text-sm font-medium text-gray-700 hover:text-amber-800 transition-all duration-300 before:content-[''] before:absolute before:bottom-0 before:left-1/2 before:w-0 before:h-0.5 before:bg-gradient-to-r before:from-amber-600 before:to-amber-400 before:transition-all before:duration-300 before:-translate-x-1/2 hover:before:w-3/4`}
                       style={{ transitionDelay: `${index * 50}ms` }}
                     >
@@ -780,7 +806,12 @@ export default function Home() {
                 key={item.name}
                 href={item.href}
                 className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-[#EFE9E3] rounded-lg group transition-colors"
-                onClick={() => setMenuOpen(false)}
+                onClick={(e) => {
+                  if (item.name === 'Gallery') {
+                    handleGalleryClick(e);
+                  }
+                  setMenuOpen(false);
+                }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3 text-[#a67d4b] opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
@@ -865,9 +896,9 @@ export default function Home() {
 
           {/* CTA Button */}
           <div className="relative group">
-            <a
-              href="#booking"
-              className="relative inline-flex items-center px-8 py-4 overflow-hidden text-sm font-medium text-white transition-all duration-500 rounded-lg group bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600"
+            <button
+              onClick={() => setShowScheduleVisitForm(true)}
+              className="relative inline-flex items-center px-8 py-4 overflow-hidden text-sm font-medium text-white transition-all duration-500 rounded-lg group bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 cursor-pointer"
             >
               <span className="relative z-10 flex items-center">
                 <span className="mr-3">Schedule a Private Tour</span>
@@ -876,7 +907,7 @@ export default function Home() {
                 </svg>
               </span>
               <span className="absolute inset-0 bg-gradient-to-r from-amber-500/30 to-amber-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-            </a>
+            </button>
 
             <p className="mt-4 text-sm text-gray-300 opacity-0 animate-fade-in" style={{ "animationFillMode": "forwards", "animationDelay": "1s" }}>
               Limited availability. Book your exclusive viewing today.
@@ -934,25 +965,7 @@ export default function Home() {
             </p>
           </div></div>
 
-        {/* Jodi Option Banner
-          <div className="bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-xl p-6 mb-12 shadow-lg">
-            <div className="flex flex-col md:flex-row items-center justify-between">
-              <div className="flex items-center mb-4 md:mb-0">
-                <div className="bg-white/20 p-3 rounded-full mr-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold">Exclusive Jodi Options Available</h3>
-                  <p className="text-amber-100 text-sm">Combine adjacent units for larger living spaces</p>
-                </div>
-              </div>
-              <button className="bg-white text-amber-700 hover:bg-amber-50 px-6 py-2 rounded-lg font-medium transition-colors whitespace-nowrap">
-                Know More
-              </button>
-            </div>
-          </div> */}
+   
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
           {/* 3 BHK - 1100 sq.ft */}
@@ -1049,7 +1062,10 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <button className="mt-6 w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition-opacity">
+              <button 
+                onClick={() => setShowContactForm(true)}
+                className="mt-6 w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition-opacity cursor-pointer"
+              >
                 Enquire Now
               </button>
             </div>
@@ -1148,7 +1164,10 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <button className="mt-6 w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition-opacity">
+              <button 
+                onClick={() => setShowContactForm(true)}
+                className="mt-6 w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition-opacity cursor-pointer"
+              >
                 Enquire Now
               </button>
             </div>
@@ -1247,7 +1266,10 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <button className="mt-6 w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition-opacity">
+              <button 
+                onClick={() => setShowContactForm(true)}
+                className="mt-6 w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition-opacity cursor-pointer"
+              >
                 Enquire Now
               </button>
             </div>
@@ -1342,8 +1364,11 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <button className="mt-6 w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition-opacity">
-                Schedule Viewing
+              <button 
+                onClick={() => setShowContactForm(true)}
+                className="mt-6 w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition-opacity cursor-pointer"
+              >
+                Enquire Now
               </button>
             </div>
           </div>
@@ -1767,81 +1792,19 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Side - Custom Luxury Map (3 columns) */}
+            {/* Right Side - Location Map (3 columns) */}
             <div className="reveal-right lg:col-span-3">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border-3 border-amber-200 hover:border-amber-400 transition-all duration-500 group">
-                {/* Premium Map Container */}
-                <div className="relative h-[700px] bg-gradient-to-br from-amber-50 via-white to-amber-50">
-
-                  {/* Custom Illustrated Map */}
-                  <div className="absolute inset-0 overflow-hidden bg-gradient-to-br from-amber-50 via-white to-blue-50">
-                    {/* Map Background Pattern */}
-                    <svg className="absolute inset-0 w-full h-full opacity-20" xmlns="http://www.w3.org/2000/svg">
-                      <defs>
-                        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d4a574" strokeWidth="0.5" />
-                        </pattern>
-                      </defs>
-                      <rect width="100%" height="100%" fill="url(#grid)" />
-                    </svg>
-
-                    {/* Main Roads */}
-                    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 700" xmlns="http://www.w3.org/2000/svg">
-                      {/* Vertical Main Road */}
-                      <line x1="400" y1="0" x2="400" y2="700" stroke="#d4a574" strokeWidth="8" opacity="0.6" />
-                      <line x1="400" y1="0" x2="400" y2="700" stroke="#f5f5f5" strokeWidth="4" opacity="0.8" />
-
-                      {/* Horizontal Main Road */}
-                      <line x1="0" y1="350" x2="800" y2="350" stroke="#d4a574" strokeWidth="8" opacity="0.6" />
-                      <line x1="0" y1="350" x2="800" y2="350" stroke="#f5f5f5" strokeWidth="4" opacity="0.8" />
-
-                      {/* Secondary Roads */}
-                      <line x1="200" y1="0" x2="200" y2="700" stroke="#d4a574" strokeWidth="3" opacity="0.4" />
-                      <line x1="600" y1="0" x2="600" y2="700" stroke="#d4a574" strokeWidth="3" opacity="0.4" />
-                      <line x1="0" y1="200" x2="800" y2="200" stroke="#d4a574" strokeWidth="3" opacity="0.4" />
-                      <line x1="0" y1="500" x2="800" y2="500" stroke="#d4a574" strokeWidth="3" opacity="0.4" />
-
-                      {/* Water Body */}
-                      <ellipse cx="250" cy="450" rx="80" ry="60" fill="#c9e6f5" opacity="0.6" />
-                      <ellipse cx="250" cy="450" rx="70" ry="50" fill="#b3ddf2" opacity="0.4" />
-
-                      {/* Green Spaces */}
-                      <rect x="520" y="120" width="60" height="60" fill="#d4edda" opacity="0.5" rx="5" />
-                      <rect x="100" y="550" width="50" height="50" fill="#d4edda" opacity="0.5" rx="5" />
-
-                      {/* Central Location Marker (Godrej Reserve) */}
-                      <circle cx="400" cy="350" r="30" fill="#dc3545" opacity="0.9" />
-                      <circle cx="400" cy="350" r="25" fill="#fff" opacity="0.3" />
-                      <circle cx="400" cy="350" r="8" fill="#fff" />
-
-                      {/* Location Pin */}
-                      <path d="M 400 320 L 400 350 L 385 365 L 400 380 L 415 365 Z" fill="#dc3545" opacity="0.8" />
-                    </svg>
-
-                    {/* Location Labels */}
-                    <div className="absolute inset-0 pointer-events-none">
-                      {/* Kandivali East Label */}
-                      <div className="absolute" style={{ top: '45%', left: '52%', transform: 'translate(-50%, -50%)' }}>
-                        <div className="bg-white/90 px-3 py-1.5 rounded-lg shadow-lg border-2 border-amber-300">
-                          <p className="text-xs font-bold text-amber-700 uppercase tracking-wider">Kandivali East</p>
-                        </div>
-                      </div>
-
-                      {/* Nearby Areas */}
-                      <div className="absolute top-20 left-20 bg-white/80 px-2 py-1 rounded text-xs text-gray-600 shadow">Kandivali West</div>
-                      <div className="absolute top-20 right-20 bg-white/80 px-2 py-1 rounded text-xs text-gray-600 shadow">Thakur Village</div>
-                      <div className="absolute bottom-20 left-32 bg-white/80 px-2 py-1 rounded text-xs text-gray-600 shadow">Malad</div>
-                      <div className="absolute bottom-32 right-32 bg-white/80 px-2 py-1 rounded text-xs text-gray-600 shadow">Hanuman Nagar</div>
-
-                      {/* Metro Stations */}
-                      <div className="absolute" style={{ top: '35%', left: '48%' }}>
-                        <div className="w-3 h-3 bg-blue-600 rounded-full border-2 border-white shadow-lg"></div>
-                      </div>
-                      <div className="absolute" style={{ top: '55%', left: '38%' }}>
-                        <div className="w-3 h-3 bg-blue-600 rounded-full border-2 border-white shadow-lg"></div>
-                      </div>
-                    </div>
-                  </div>
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border-3 border-amber-200 hover:border-amber-400 hover:shadow-amber-300/50 transition-all duration-700 ease-in-out group">
+                {/* Map Container */}
+                <div className="relative bg-gradient-to-br from-amber-50 via-white to-amber-50">
+                  <Image 
+                    src="/map.png" 
+                    alt="Location Map - Godrej Reserve, Kandivali East" 
+                    width={800} 
+                    height={800}
+                    className="w-full h-auto object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
+                    priority
+                  />
 
                   {/* Luxury Corner Decorations */}
                   <div className="absolute inset-0 pointer-events-none z-10">
@@ -1855,21 +1818,26 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-amber-500/5 pointer-events-none z-5"></div>
 
                   {/* Address Badge */}
-                  <div className="absolute bottom-6 left-6 right-6 bg-white/95 rounded-lg p-3 shadow-xl border-2 border-amber-300 z-20">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center">
-                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <a 
+                    href="https://maps.app.goo.gl/RNfEUo2cq8qorHbPA" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="absolute bottom-4 left-4 right-4 bg-white/95 rounded-lg p-2.5 shadow-xl border-2 border-amber-300 z-20 hover:bg-white hover:border-amber-400 hover:shadow-2xl transition-all duration-300 cursor-pointer group "
+                  >
+                    <div className="flex items-start gap-2">
+                      <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                       </div>
                       <div className="flex-1">
-                        <p className="text-xs font-bold text-amber-700 uppercase tracking-wide mb-0.5">Project Address</p>
-                        <p className="text-sm font-semibold text-gray-800">Godrej Reserve, Akurli Rd, Kandivali East</p>
-                        <p className="text-xs text-gray-600">Mumbai, Maharashtra 400101</p>
+                        <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wide mb-0.5">Project Address</p>
+                        <p className="text-xs font-semibold text-gray-800 group-hover:text-gray-700 transition-colors duration-300">Godrej Reserve, Akurli Rd, Kandivali East</p>
+                        <p className="text-[12px] text-gray-500">https://maps.app.goo.gl/RNfEUo2cq8qorHbPA <br></br>Mumbai, Maharashtra 400101</p>
                       </div>
                     </div>
-                  </div>
+                  </a>
                 </div>
               </div>
             </div>
@@ -1916,7 +1884,7 @@ export default function Home() {
                 <p className="text-gray-600 text-sm mb-4">
                   Discover elegant 2, 3 and 4 BHK layouts crafted for premium living with smart space planning.
                 </p>
-                <div className="flex flex-wrap gap-2 mb-6 text-xs font-medium">
+                <div className="flex flex-wrap gap-2 text-xs font-medium">
                   <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">2 BHK</span>
                   <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">3 BHK</span>
                   <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">4 BHK</span>
@@ -1954,29 +1922,37 @@ export default function Home() {
                 <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 group-hover:text-amber-700 transition-colors duration-300">
                   Pricing & Payment Plans
                 </h3>
+                
+                {/* Collector's Edition Badge */}
+                <div className="mb-4 p-3 bg-gradient-to-r from-amber-50 to-amber-100 rounded-lg border-l-4 border-amber-500">
+                  <p className="text-xs font-bold text-amber-900 uppercase tracking-wider mb-1">Presenting The Collector's Edition</p>
+                  <p className="text-xs text-amber-800 italic">27 exclusive residences crafted for connoisseurs of luxury</p>
+                </div>
+
                 <p className="text-gray-600 text-sm mb-4">
                   Benefit from transparent pricing, launch offers and tailored EMIs designed for discerning buyers.
                 </p>
-                <div className="flex flex-wrap gap-2 mb-6 text-xs font-medium">
-                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">Flexible EMI</span>
-                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">Zero Down Payment</span>
-                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">Subsidy Ready</span>
+                
+                <div className="flex flex-wrap gap-2 mb-4 text-xs font-medium">
+                  <span className="px-3 py-1 bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-full shadow-sm">10:20:30:40 Payment Plan^</span>
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">EOI Window Open</span>
                 </div>
+                
                 <div className="mt-auto pt-4 border-t border-amber-100">
-                  <ul className="space-y-2 text-sm text-gray-600">
-                    <li className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                      <span>Launch price starting from ₹1.65 Cr*</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                      <span>10:80:10 milestone-linked payment schedule</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                      <span>Pre-EMI waived till possession on select units</span>
-                    </li>
-                  </ul>
+                  <div className="mb-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                    <p className="text-xs font-bold text-amber-900 mb-2">Palatial Higher Floor Residencies</p>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-700 font-medium">3 BHK</span>
+                        <span className="text-amber-700 font-bold">₹6.49 Cr<sup className="text-[10px]">++</sup></span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-700 font-medium">4 BHK</span>
+                        <span className="text-amber-700 font-bold">₹8.69 Cr<sup className="text-[10px]">++</sup></span>
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-amber-600 mt-2 italic">• Exclusive Jodi Options Available</p>
+                  </div>
                 </div>
               </div>
               <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-amber-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -1997,7 +1973,7 @@ export default function Home() {
                 <p className="text-gray-600 text-sm mb-4">
                   Godrej Properties carries a 125+ year legacy of excellence, innovation and sustainable design.
                 </p>
-                <div className="flex flex-wrap gap-2 mb-6 text-xs font-medium">
+                <div className="flex flex-wrap gap-2 text-xs font-medium">
                   <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">125+ Years</span>
                   <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">150+ Projects</span>
                   <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">ISO Certified</span>
@@ -2037,24 +2013,24 @@ export default function Home() {
       />
 
       {/* Premium Footer - At the end of all sections */}
-      <Footer />
+      <Footer handleGalleryClick={handleGalleryClick} setShowScheduleVisitForm={setShowScheduleVisitForm} />
 
       {/* Chatbot Widget - Fixed position, outside main container */}
-      <div className="fixed bottom-6 right-6 z-[60]">
+      <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[60]">
         {/* Chat Window */}
         {chatbotOpen && (
-          <div className="mb-4 w-96 h-[600px] bg-white rounded-2xl shadow-2xl border-2 border-amber-200 flex flex-col overflow-hidden animate-slideUp">
+          <div className="mb-4 w-[calc(100vw-2rem)] md:w-96 h-[calc(100vh-8rem)] md:h-[600px] bg-white rounded-2xl shadow-2xl border-2 border-amber-200 flex flex-col overflow-hidden animate-slideUp">
             {/* Header */}
-            <div className="bg-gradient-to-r from-amber-500 to-amber-600 text-white p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="bg-gradient-to-r from-amber-500 to-amber-600 text-white p-3 md:p-4 flex items-center justify-between">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg">Godrej Assistant</h3>
-                  <p className="text-xs text-amber-100">Online • Ready to help</p>
+                  <h3 className="font-bold text-base md:text-lg">Godrej Assistant</h3>
+                  <p className="text-[10px] md:text-xs text-amber-100">Online • Ready to help</p>
                 </div>
               </div>
               <button
@@ -2068,19 +2044,19 @@ export default function Home() {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+            <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4 bg-gray-50">
               {chatMessages.map((msg, idx) => (
                 <div
                   key={idx}
                   className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-2xl ${msg.type === 'user'
+                    className={`max-w-[85%] md:max-w-[80%] p-2.5 md:p-3 rounded-2xl ${msg.type === 'user'
                         ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-br-none'
                         : 'bg-white text-gray-800 shadow-md rounded-bl-none border border-gray-200'
                       }`}
                   >
-                    <p className="text-sm whitespace-pre-line">{msg.text}</p>
+                    <p className="text-xs md:text-sm whitespace-pre-line">{msg.text}</p>
                   </div>
                 </div>
               ))}
@@ -2089,14 +2065,14 @@ export default function Home() {
             </div>
 
             {/* Quick Suggestions */}
-            <div className="px-4 py-2 bg-white border-t border-gray-200">
-              <div className="flex gap-2 overflow-x-auto pb-2">
+            <div className="px-3 md:px-4 py-2 bg-white border-t border-gray-200">
+              <div className="flex gap-1.5 md:gap-2 overflow-x-auto pb-2 scrollbar-hide">
                 <button
                   onClick={() => {
                     setUserInput('What are the prices?');
                     setTimeout(() => handleSendMessage(), 100);
                   }}
-                  className="text-xs bg-amber-100 text-amber-700 px-3 py-1.5 rounded-full hover:bg-amber-200 transition-colors whitespace-nowrap"
+                  className="text-[10px] md:text-xs bg-amber-100 text-amber-700 px-2.5 md:px-3 py-1.5 rounded-full hover:bg-amber-200 transition-colors whitespace-nowrap flex-shrink-0"
                 >
                   💰 Pricing
                 </button>
@@ -2105,7 +2081,7 @@ export default function Home() {
                     setUserInput('Show me 3 BHK options');
                     setTimeout(() => handleSendMessage(), 100);
                   }}
-                  className="text-xs bg-amber-100 text-amber-700 px-3 py-1.5 rounded-full hover:bg-amber-200 transition-colors whitespace-nowrap"
+                  className="text-[10px] md:text-xs bg-amber-100 text-amber-700 px-2.5 md:px-3 py-1.5 rounded-full hover:bg-amber-200 transition-colors whitespace-nowrap flex-shrink-0"
                 >
                   🏠 3 BHK
                 </button>
@@ -2114,7 +2090,7 @@ export default function Home() {
                     setUserInput('Book a site visit');
                     setTimeout(() => handleSendMessage(), 100);
                   }}
-                  className="text-xs bg-amber-100 text-amber-700 px-3 py-1.5 rounded-full hover:bg-amber-200 transition-colors whitespace-nowrap"
+                  className="text-[10px] md:text-xs bg-amber-100 text-amber-700 px-2.5 md:px-3 py-1.5 rounded-full hover:bg-amber-200 transition-colors whitespace-nowrap flex-shrink-0"
                 >
                   📅 Visit
                 </button>
@@ -2122,7 +2098,7 @@ export default function Home() {
             </div>
 
             {/* Input Area */}
-            <div className="p-4 bg-white border-t border-gray-200">
+            <div className="p-3 md:p-4 bg-white border-t border-gray-200">
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -2130,11 +2106,11 @@ export default function Home() {
                   onChange={(e) => setUserInput(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Ask me anything..."
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm"
+                  className="flex-1 px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-xs md:text-sm"
                 />
                 <button
                   onClick={handleSendMessage}
-                  className="bg-gradient-to-r from-amber-500 to-amber-600 text-white p-3 rounded-full hover:opacity-90 transition-opacity shadow-lg"
+                  className="bg-gradient-to-r from-amber-500 to-amber-600 text-white p-2 md:p-3 rounded-full hover:opacity-90 transition-opacity shadow-lg flex-shrink-0"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
@@ -2148,7 +2124,7 @@ export default function Home() {
         {/* Floating Chat Button */}
         <button
           onClick={() => setChatbotOpen(!chatbotOpen)}
-          className="bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-white w-16 h-16 rounded-full shadow-2xl hover:shadow-amber-500/50 hover:scale-110 transition-all duration-300 flex items-center justify-center relative group"
+          className="bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-white w-14 h-14 md:w-16 md:h-16 rounded-full shadow-2xl hover:shadow-amber-500/50 hover:scale-110 transition-all duration-300 flex items-center justify-center relative group"
         >
           {chatbotOpen ? (
             <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">

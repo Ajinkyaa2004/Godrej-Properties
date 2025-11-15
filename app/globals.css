@@ -589,6 +589,16 @@ img, video {
   animation: slideUp 0.3s ease-out forwards;
 }
 
+/* Hide scrollbar for chatbot quick suggestions */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
 /* Playful chatbot animations */
 @keyframes bounce-slow {
   0%, 100% {

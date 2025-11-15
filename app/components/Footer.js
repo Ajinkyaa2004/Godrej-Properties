@@ -4,9 +4,11 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-const Footer = () => {
+const Footer = ({ handleGalleryClick, setShowScheduleVisitForm }) => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalContent, setModalContent] = useState({ title: '', content: '' });
 
   const handleSubscribe = (e) => {
     e.preventDefault();
@@ -17,6 +19,47 @@ const Footer = () => {
         setEmail('');
       }, 3000);
     }
+  };
+
+  const openModal = (type) => {
+    if (type === 'disclaimer') {
+      setModalContent({
+        title: 'Disclaimer',
+        content: `
+          <h3 class="text-xl font-bold text-amber-400 mb-4">Disclaimer</h3>
+          <p class="mb-4 text-white">This website is only for the purpose of providing information regarding real estate projects in different regions. By accessing this website, the viewer confirms that the information including brochures and marketing collaterals on this website is solely for informational purposes and the viewer has not relied on this information for making any booking/purchase in any project of the company. Nothing on this website constitutes advertising, marketing, booking, selling or an offer for sale, or invitation to purchase a unit in any project by the company. The company is not liable for any consequence of any action taken by the viewer relying on such material/ information on this website.</p>
+          <p class="mb-4 text-white">Please also note that the company has not verified the information and the compliances of the projects. Further, the company has not checked the RERA (Real Estate Regulation Act 2016) registration status of the real estate projects listed herein. The company does not make any representation in regards to the compliances done against these projects. You should make yourself aware about the RERA registration status of the listed real estate projects before purchasing property.</p>
+          <p class="text-white">This site is for information purpose only and should not be treated as the official website.</p>
+        `
+      });
+    } else if (type === 'privacy') {
+      setModalContent({
+        title: 'Privacy Policy',
+        content: `
+          <h3 class="text-xl font-bold text-amber-400 mb-4">Privacy Policy</h3>
+          <p class="mb-4 text-white">In our endeavor and commitment of protecting your personal information, we have designed this comprehensive privacy policy. This is to keep your interests and information safe on our website.</p>
+          
+          <h4 class="text-lg font-semibold text-amber-300 mb-2 mt-6">Updation of privacy policy</h4>
+          <p class="mb-4 text-white">This privacy policy is subject to undergo change and review without any prior notice or approval. So to keep yourself updated on the changes introduced, please keep visiting and reviewing the terms and conditions of this privacy policy.</p>
+          
+          <h4 class="text-lg font-semibold text-amber-300 mb-2 mt-6">User information</h4>
+          <p class="mb-4 text-white">By using our website, you agree to abide by the rules laid out by us and consent to collection and use of all such information that you may furnish to, or through, our website. In some cases, while you visit our website, you may not need to provide any personal information. But in certain instances, we must have your personal information in order for us to grant you access to some of the links or sites. Such links/ pages may ask for your name, e-mail address, phone number etc. The information furnished by you is used to provide relevant products and services and to acknowledge receipt of your communication or to send out information and updates to you. You have option of requesting removal from our mailing list. We do not give away your personal information to any third party.</p>
+          
+          <h4 class="text-lg font-semibold text-amber-300 mb-2 mt-6">Security</h4>
+          <p class="mb-4 text-white">To ensure security while transferring sensitive information, all the ongoing transmissions between client and server are encrypted using advanced and standard protocols. We also practice restricted access by employees and hold them to high levels of confidentiality.</p>
+          
+          <h4 class="text-lg font-semibold text-amber-300 mb-2 mt-6">Use of Cookies</h4>
+          <p class="mb-4 text-white">We may use cookies for security, session continuity, and customization purposes. In case of a user opting to reject a cookie, he/ she may not be able to gain access to some of the limited services or use some features of the site.</p>
+          
+          <p class="mb-4 text-white">In case of any queries or suggestions regarding privacy statement or your dealings with this web site, please contact us.</p>
+        `
+      });
+    }
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
   };
 
   return (
@@ -36,13 +79,13 @@ const Footer = () => {
           
           {/* Column 1: Brand & Description - 4 columns */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="group">
+            <div className="group flex justify-center md:justify-start">
               <Image 
                 src="/Layer 5.png" 
                 alt="Godrej Reserve Logo" 
                 width={240}
                 height={60}
-                className="object-contain -ml-12 brightness-200 group-hover:scale-105 transition-transform duration-300"
+                className="object-contain md:-ml-12 brightness-200 group-hover:scale-105 transition-transform duration-300"
               />
             </div>
             
@@ -50,17 +93,6 @@ const Footer = () => {
               Experience unparalleled luxury living at Godrej Reserve, Kandivali East. 
               Where elegance meets comfort in Mumbai's most prestigious address.
             </p>
-
-            {/* RERA Badge */}
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-amber-600/20 border border-amber-500/30 rounded-lg px-4 py-2">
-              <svg className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <div className="text-xs">
-                <p className="text-amber-400 font-semibold">RERA Approved</p>
-                <p className="text-gray-400">P51800052847</p>
-              </div>
-            </div>
 
             {/* Social Media */}
             <div className="flex items-center gap-3 pt-4">
@@ -95,17 +127,22 @@ const Footer = () => {
             </h3>
             <ul className="space-y-3">
               {[
-                { name: 'Home', href: '#home' },
-                { name: 'About Us', href: '#about' },
-                { name: 'Configurations', href: '#configurations' },
-                { name: 'Amenities', href: '#amenities' },
-                { name: 'Gallery', href: '/gallery' },
-                { name: 'Location', href: '#location' },
+                { name: 'Home', href: '#home', requiresForm: false },
+                { name: 'About Us', href: '#about', requiresForm: false },
+                { name: 'Configurations', href: '#configurations', requiresForm: false },
+                { name: 'Amenities', href: '#amenities', requiresForm: true },
+                { name: 'Gallery', href: '/gallery', requiresForm: true },
+                { name: 'Location', href: '#location', requiresForm: false },
               ].map((link, idx) => (
                 <li key={idx}>
                   <a
                     href={link.href}
-                    className="text-gray-300 hover:text-amber-400 transition-colors duration-300 flex items-center gap-2 group text-sm"
+                    onClick={(e) => {
+                      if (link.requiresForm && handleGalleryClick) {
+                        handleGalleryClick(e);
+                      }
+                    }}
+                    className="text-gray-300 hover:text-amber-400 transition-colors duration-300 flex items-center gap-2 group text-sm cursor-pointer"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-500/50 group-hover:bg-amber-400 transition-colors"></span>
                     {link.name}
@@ -122,24 +159,61 @@ const Footer = () => {
               Property Info
             </h3>
             <ul className="space-y-3">
-              {[
-                { name: 'Floor Plans', href: '#configurations' },
-                { name: 'Pricing', href: '#configurations' },
-                { name: 'Payment Plans', href: '#contact' },
-                { name: 'RERA Details', href: '#' },
-                { name: 'Brochure', href: '#' },
-                { name: 'Site Visit', href: '#contact' },
-              ].map((link, idx) => (
-                <li key={idx}>
-                  <a
-                    href={link.href}
-                    className="text-gray-300 hover:text-amber-400 transition-colors duration-300 flex items-center gap-2 group text-sm"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500/50 group-hover:bg-amber-400 transition-colors"></span>
-                    {link.name}
-                  </a>
-                </li>
-              ))}
+              <li>
+                <button
+                  onClick={() => setShowScheduleVisitForm && setShowScheduleVisitForm(true)}
+                  className="text-gray-300 hover:text-amber-400 transition-colors duration-300 flex items-center gap-2 group text-sm cursor-pointer"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500/50 group-hover:bg-amber-400 transition-colors"></span>
+                  Floor Plans
+                </button>
+              </li>
+              <li>
+                <a
+                  href="#configurations"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.querySelector('#configurations')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}
+                  className="text-gray-300 hover:text-amber-400 transition-colors duration-300 flex items-center gap-2 group text-sm cursor-pointer"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500/50 group-hover:bg-amber-400 transition-colors"></span>
+                  Pricing
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#location"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.querySelector('#location')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }}
+                  className="text-gray-300 hover:text-amber-400 transition-colors duration-300 flex items-center gap-2 group text-sm cursor-pointer"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500/50 group-hover:bg-amber-400 transition-colors"></span>
+                  Payment Plans
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.godrejproperties.com/digitalcollateral/mumbai/reserve/pdf/Reserve_opp-doc-v2.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-300 hover:text-amber-400 transition-colors duration-300 flex items-center gap-2 group text-sm"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500/50 group-hover:bg-amber-400 transition-colors"></span>
+                  Brochure
+                </a>
+              </li>
+              <li>
+                <button
+                  onClick={() => setShowScheduleVisitForm && setShowScheduleVisitForm(true)}
+                  className="text-gray-300 hover:text-amber-400 transition-colors duration-300 flex items-center gap-2 group text-sm cursor-pointer"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500/50 group-hover:bg-amber-400 transition-colors"></span>
+                  Site Visit
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -174,7 +248,7 @@ const Footer = () => {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Call Us</p>
-                  <a href="tel:+919876543210" className="text-sm text-gray-300 hover:text-amber-400 transition-colors">+91 98765 43210</a>
+                  <a href="tel:+919876543210" className="text-sm text-gray-300 hover:text-amber-400 transition-colors">+91 8879006523</a>
                 </div>
               </div>
 
@@ -241,25 +315,24 @@ const Footer = () => {
                 © {new Date().getFullYear()} <span className="text-amber-400 font-semibold">Godrej Reserve</span>. All rights reserved.
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                Developed with ❤️ for luxury living
+                Crafted with ❤️ by <span className="text-amber-400 font-medium">Synergy Three</span>
               </p>
             </div>
 
             {/* Legal Links */}
             <div className="flex items-center gap-6 text-sm">
-              {[
-                { name: 'Privacy Policy', href: '#' },
-                { name: 'Terms & Conditions', href: '#' },
-                { name: 'Disclaimer', href: '#' },
-              ].map((link, idx) => (
-                <a
-                  key={idx}
-                  href={link.href}
-                  className="text-gray-400 hover:text-amber-400 transition-colors duration-300"
-                >
-                  {link.name}
-                </a>
-              ))}
+              <button
+                onClick={() => openModal('privacy')}
+                className="text-gray-400 hover:text-amber-400 transition-colors duration-300"
+              >
+                Privacy Policy
+              </button>
+              <button
+                onClick={() => openModal('disclaimer')}
+                className="text-gray-400 hover:text-amber-400 transition-colors duration-300"
+              >
+                Disclaimer
+              </button>
             </div>
           </div>
         </div>
@@ -268,6 +341,41 @@ const Footer = () => {
       {/* Decorative corner elements */}
       <div className="absolute bottom-0 left-0 w-24 h-24 border-l-2 border-b-2 border-amber-500/30 opacity-30"></div>
       <div className="absolute bottom-0 right-0 w-24 h-24 border-r-2 border-b-2 border-amber-500/30 opacity-30"></div>
+
+      {/* Modal for Disclaimer and Privacy Policy */}
+      {showModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black border-2 border-amber-500/30 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+            {/* Header */}
+            <div className="sticky top-0 z-10 bg-gradient-to-r from-amber-600 to-amber-700 px-6 py-4 flex items-center justify-between border-b border-amber-500/30">
+              <h2 className="text-2xl font-bold text-white">{modalContent.title}</h2>
+              <button
+                onClick={closeModal}
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-300 group"
+              >
+                <svg className="w-6 h-6 text-white group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="overflow-y-auto max-h-[calc(90vh-80px)] px-6 py-6 text-gray-300">
+              <div dangerouslySetInnerHTML={{ __html: modalContent.content }} className="prose prose-invert prose-amber max-w-none" />
+            </div>
+
+            {/* Footer */}
+            <div className="sticky bottom-0 bg-gradient-to-t from-gray-900 to-transparent px-6 py-4 border-t border-amber-500/20">
+              <button
+                onClick={closeModal}
+                className="w-full px-6 py-3 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-amber-500/50"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </footer>
   );
 };

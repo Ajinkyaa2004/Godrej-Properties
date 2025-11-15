@@ -125,6 +125,29 @@ if (MONGODB_URI) {
 const DB_NAME = 'godrej-reserve';
 const COLLECTION_NAME = 'schedule-visits'; // Separate collection for visit bookings
 
+// Lazy connection function
+let cachedClient = null;
+let cachedDb = null;
+
+async function connectToDatabase() {
+  if (!MONGODB_URI) {
+    throw new Error('MONGODB_URI is not defined');
+  }
+
+  if (cachedClient && cachedDb) {
+    return { client: cachedClient, db: cachedDb };
+  }
+
+  const client = new MongoClient(MONGODB_URI);
+  await client.connect();
+  const db = client.db(DB_NAME);
+
+  cachedClient = client;
+  cachedDb = db;
+
+  return { client, db };
+}
+
 export async function POST(request) {
   try {
     // Check if MongoDB is configured
