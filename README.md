@@ -65,18 +65,13 @@ Database (if enabled)
 🧵 Mongoose ORM
 
 📞 Contact
-
 If you are interested in collaborating or improving the project:
-📧 ajinkya.dev.work@gmail.com
+📧 dhumalajinkya2004@gmail.com
+🔗 https://itsajinkya.vercel.app 
+📫 LinkedIn: [https://www.linkedin.com/in/ajinkya842004/]
 
 
-
-
-Email: [dhumalajinkya2004@gmail.com]
-LinkedIn: [https://www.linkedin.com/in/ajinkya842004/]
-
-
-Crafted with ❤️ by AJINKYA DHUMAL  (SYNERGY THREE).
+Crafted with ❤️ by AJINKYA DHUMAL !  (SYNERGY THREE)...
 
 
 
