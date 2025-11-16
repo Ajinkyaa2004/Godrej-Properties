@@ -10,7 +10,6 @@ const inter = Inter({
 export const metadata = {
   title: "Godrej Reserve Kandivali East | Luxury 3 & 4 BHK Flats ₹3.75Cr* | Premium Residences Mumbai",
   description: "Discover Godrej Reserve - Premium 3 & 4 BHK luxury apartments in Kandivali East, Mumbai. Starting ₹3.75Cr*. 18.6 acres, 6 towers, world-class amenities. RERA approved. Book site visit now!",
-  keywords: "Godrej Reserve, Kandivali East flats, luxury apartments Mumbai, 3 BHK Kandivali, 4 BHK Mumbai, Godrej Properties, premium residences, RERA approved flats, Mumbai real estate",
   authors: [{ name: "Godrej Properties" }],
   creator: "Godrej Properties",
   publisher: "Godrej Properties",
@@ -19,7 +18,6 @@ export const metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://godrejreserve.com'),
   alternates: {
     canonical: '/',
   },
@@ -55,12 +53,6 @@ export const metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
-  },
-  verification: {
-    google: 'your-google-verification-code',
-  },
-  other: {
-    'google-site-verification': 'your-google-verification-code',
   },
 };
 
