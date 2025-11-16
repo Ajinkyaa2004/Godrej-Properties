@@ -1,23 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+🌟 Godrej Reserve – Lead Generation Website
 
-## Getting Started
+Real Estate Lead Capture • High-Conversion UX • Secure Backend
 
-First, run the development server:
+🏡 Project Overview
 
-```bash
-n
-## Learn More
+The Godrej Reserve Lead Generation Website is a high-performance real-estate landing platform designed to capture, validate, and manage leads efficiently.
+It includes optimized UI sections, property highlights, enquiry forms, scheduling features, email confirmations, and backend APIs—all built for speed, SEO, and conversions.
 
-To learn more about Next.js, take a look at the following resources:
+🚀 Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+🔹 Frontend
+🌈 Premium UI with luxury fonts & gold gradient theme
+🖼️ Hero banner, amenities, gallery, highlights, and pricing sections
+📝 Contact Form & Schedule-Visit Form (with success messages)
+📩 Email confirmation integrated (Nodemailer setup)
+📱 Fully responsive across mobile, tablet, and desktop
+⚡ Lazy-loaded images for faster performance
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+🔹 Backend
+🛠 Node.js + Express API
+✉️ Email confirmation for:
+Contact form submissions
+Schedule Visit form submissions
 
-## Deploy on Vercel
+🛡 Graceful fallback if SMTP is not configured
+📦 Clean folder structure and environment variable support
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+🔹 Database (Optional)
+Supports MongoDB for storing:
+Lead name
+Phone number
+Email
+Message
+Visit date
+Form type
+Timestamp
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# Godrej-Properties
+📧 Email System
+The project uses Nodemailer + Gmail SMTP (OAuth2) to send automatic emails:
+🔔 Contact Form
+Sends a welcome/thank-you email
+Includes user details
+Mentions 24-hour support follow-up
+
+📅 Schedule Visit Form
+Sends a visit confirmation email
+Includes date & next steps
+
+🧩 Tech Stack
+Frontend
+⚛️ Next.js / React
+🎨 Tailwind CSS
+🧩 ShadCN UI
+
+🔤 Premium fonts (Playfair Display, etc.)
+Backend
+🟩 Node.js
+🚏 Express.js
+✉️ Nodemailer
+🗝 Gmail OAuth2
+
+Database (if enabled)
+🍃 MongoDB
+🧵 Mongoose ORM
+
+📞 Contact
+
+If you are interested in collaborating or improving the project:
+📧 ajinkya.dev.work@gmail.com
+
+
+Crafted with ❤️ by AJINKYA DHUMAL  (SYNERGY THREE).
+
+
+
