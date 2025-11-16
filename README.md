@@ -70,6 +70,12 @@ If you are interested in collaborating or improving the project:
 📧 ajinkya.dev.work@gmail.com
 
 
+
+
+Email: [dhumalajinkya2004@gmail.com]
+LinkedIn: [https://www.linkedin.com/in/ajinkya842004/]
+
+
 Crafted with ❤️ by AJINKYA DHUMAL  (SYNERGY THREE).
 
 
