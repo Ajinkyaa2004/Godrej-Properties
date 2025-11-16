@@ -94,6 +94,41 @@ const Footer = ({ handleGalleryClick, setShowScheduleVisitForm }) => {
               Where elegance meets comfort in Mumbai's most prestigious address.
             </p>
 
+            {/* RERA Section */}
+            <div className="bg-gradient-to-r from-amber-500/20 to-amber-600/20 border border-amber-500/30 rounded-lg p-4 mt-6">
+              <div className="flex items-center gap-2 mb-4">
+                <svg className="w-5 h-5 text-amber-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <p className="text-amber-400 font-semibold text-sm leading-none">MahaRERA Approved</p>
+              </div>
+              
+              {/* RERA Barcodes Grid */}
+              <div className="space-y-3">
+                {[
+                  { barcode: 'Barcode1.jpeg', wing: 'Wing 1', rera: 'P51800054703' },
+                  { barcode: 'Barcode2.jpeg', wing: 'Wing 4', rera: 'P51800054691' },
+                  { barcode: 'Barcode3.jpeg', wing: 'Wing 5', rera: 'P51800054690' },
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-3 bg-white/5 rounded-lg p-2.5">
+                    <div className="bg-white rounded p-1 flex-shrink-0">
+                      <Image 
+                        src={`/${item.barcode}`}
+                        alt={`${item.wing} Barcode`}
+                        width={100}
+                        height={100}
+                        className="object-contain"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <p className="text-xs text-amber-400 font-medium leading-tight">Godrej Reserve {item.wing}</p>
+                      <p className="text-[10px] text-gray-300 leading-tight">MahaRERA: {item.rera}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Social Media */}
             <div className="flex items-center gap-3 pt-4">
               <p className="text-sm text-gray-400 font-medium">Follow Us:</p>

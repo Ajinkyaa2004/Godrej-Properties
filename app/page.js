@@ -245,9 +245,26 @@ const OldGalleryModal = ({ isOpen, onClose, images, title }) => {
 };
 
 // Static Image Box Component - Optimized for performance
-const StaticImageBox = ({ image, alt }) => {
+const StaticImageBox = ({ image, alt, onGalleryClick }) => {
+  const handleClick = () => {
+    const formSubmitted = localStorage.getItem('contactFormSubmitted');
+    
+    if (formSubmitted === 'true') {
+      // User has filled the form, redirect to gallery
+      window.location.href = '/gallery';
+    } else {
+      // User hasn't filled the form, open contact form
+      if (onGalleryClick) {
+        onGalleryClick();
+      }
+    }
+  };
+
   return (
-    <div className="relative overflow-hidden rounded-xl shadow-lg group cursor-pointer h-full transition-shadow duration-300 hover:shadow-xl">
+    <div 
+      className="relative overflow-hidden rounded-xl shadow-lg group cursor-pointer h-full transition-shadow duration-300 hover:shadow-xl"
+      onClick={handleClick}
+    >
       <div className="relative h-full overflow-hidden">
         <Image
           src={image}
@@ -264,7 +281,7 @@ const StaticImageBox = ({ image, alt }) => {
       <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       {/* View Gallery text */}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-        <div className="bg-black/60 px-4 py-2 rounded-lg">
+        <div className="bg-black/60 px-4 py-1.5 rounded-lg">
           <p className="text-white text-sm font-semibold">View Gallery</p>
         </div>
       </div>
@@ -273,19 +290,19 @@ const StaticImageBox = ({ image, alt }) => {
 };
 
 // Amenities Image Grid Component - Optimized
-const AmenitiesImageGrid = () => {
+const AmenitiesImageGrid = ({ onGalleryClick }) => {
   return (
     <div className="space-y-4">
       {/* First Row - Two columns */}
       <div className="grid grid-cols-2 gap-4">
         {/* Image Box 1 */}
         <div className="h-48">
-          <StaticImageBox image="/image1.jpg" alt="Amenity view 1" />
+          <StaticImageBox image="/image1.jpg" alt="Amenity view 1" onGalleryClick={onGalleryClick} />
         </div>
 
         {/* Image Box 2 */}
         <div className="h-48">
-          <StaticImageBox image="/image4.jpg" alt="Amenity view 2" />
+          <StaticImageBox image="/image4.jpg" alt="Amenity view 2" onGalleryClick={onGalleryClick} />
         </div>
       </div>
 
@@ -319,12 +336,12 @@ const AmenitiesImageGrid = () => {
       <div className="grid grid-cols-2 gap-4">
         {/* Image Box 3 */}
         <div className="h-48">
-          <StaticImageBox image="/image7.jpg" alt="Amenity view 3" />
+          <StaticImageBox image="/image7.jpg" alt="Amenity view 3" onGalleryClick={onGalleryClick} />
         </div>
 
         {/* Image Box 4 */}
         <div className="h-48">
-          <StaticImageBox image="/image10.jpg" alt="Amenity view 4" />
+          <StaticImageBox image="/image10.jpg" alt="Amenity view 4" onGalleryClick={onGalleryClick} />
         </div>
       </div>
     </div>
@@ -417,7 +434,7 @@ export default function Home() {
     // If user was trying to access gallery, navigate there now
     if (pendingGalleryAccess) {
       setPendingGalleryAccess(false);
-      window.location.href = '/gallery';
+      window.location.href = '/gallery#amenities';
     }
   };
   
@@ -733,12 +750,21 @@ export default function Home() {
                   { name: 'About', href: '#about', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
                   { name: 'Amenities', href: '#amenities', icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z' },
                   { name: 'Gallery', href: '/gallery', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
-                  { name: 'Contact', href: '#contact', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+                  { name: 'Contact', href: '#contact', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', action: 'contact' },
                 ].map((item, index) => (
                   <div key={item.name} className="relative group">
                     <a
                       href={item.href}
-                      onClick={item.name === 'Gallery' ? handleGalleryClick : undefined}
+                      onClick={(e) => {
+                        if (item.name === 'Gallery') {
+                          handleGalleryClick(e);
+                        } else if (item.action === 'contact') {
+                          e.preventDefault();
+                          const footer = document.querySelector('footer');
+                          footer?.scrollIntoView({ behavior: 'smooth' });
+                          setTimeout(() => setShowContactForm(true), 800);
+                        }
+                      }}
                       className={`flex items-center px-5 py-3 text-sm font-medium text-gray-700 hover:text-amber-800 transition-all duration-300 before:content-[''] before:absolute before:bottom-0 before:left-1/2 before:w-0 before:h-0.5 before:bg-gradient-to-r before:from-amber-600 before:to-amber-400 before:transition-all before:duration-300 before:-translate-x-1/2 hover:before:w-3/4`}
                       style={{ transitionDelay: `${index * 50}ms` }}
                     >
@@ -800,7 +826,7 @@ export default function Home() {
               { name: 'About', href: '#about', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
               { name: 'Amenities', href: '#amenities', icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z' },
               { name: 'Gallery', href: '/gallery', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
-              { name: 'Contact', href: '#contact', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+              { name: 'Contact', href: '#contact', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', action: 'contact' },
             ].map((item) => (
               <a
                 key={item.name}
@@ -809,8 +835,15 @@ export default function Home() {
                 onClick={(e) => {
                   if (item.name === 'Gallery') {
                     handleGalleryClick(e);
+                  } else if (item.action === 'contact') {
+                    e.preventDefault();
+                    setMenuOpen(false);
+                    const footer = document.querySelector('footer');
+                    footer?.scrollIntoView({ behavior: 'smooth' });
+                    setTimeout(() => setShowContactForm(true), 800);
+                  } else {
+                    setMenuOpen(false);
                   }
-                  setMenuOpen(false);
                 }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3 text-[#a67d4b] opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -851,6 +884,88 @@ export default function Home() {
         </div>
         {/* Animated Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/70" />
+
+        {/* EOI Premium Box - Bottom Right */}
+        <div className="absolute bottom-24 right-0 z-20 animate-fade-in animate-bounce-slow" style={{ animationDelay: '1.5s', animationFillMode: 'both' }}>
+          <div className="relative group">
+            {/* Soft glow effect */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-amber-300/50 via-amber-400/50 to-amber-500/50 rounded-xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-700 ease-out"></div>
+            
+            {/* Main Box */}
+            <div className="relative bg-gradient-to-br from-amber-50/95 via-white/95 to-amber-50/95 backdrop-blur-xl border-2 border-amber-400/60 group-hover:border-amber-500/80 rounded-xl shadow-2xl p-3 w-56 mr-4 transition-all duration-700 ease-out">
+              {/* Premium Badge */}
+              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+                <span className="inline-block px-3 py-0.5 text-[13px] font-bold tracking-widest text-white bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 rounded-full shadow-lg animate-pulse">
+                  EOI OPEN
+                </span>
+              </div>
+
+              {/* Decorative Corner Elements */}
+              <div className="absolute top-1.5 left-1.5 w-3 h-3 border-t-2 border-l-2 border-amber-500/70 group-hover:w-4 group-hover:h-4 group-hover:border-amber-600/90 transition-all duration-500"></div>
+              <div className="absolute top-1.5 right-1.5 w-3 h-3 border-t-2 border-r-2 border-amber-500/70 group-hover:w-4 group-hover:h-4 group-hover:border-amber-600/90 transition-all duration-500"></div>
+              <div className="absolute bottom-1.5 left-1.5 w-3 h-3 border-b-2 border-l-2 border-amber-500/70 group-hover:w-4 group-hover:h-4 group-hover:border-amber-600/90 transition-all duration-500"></div>
+              <div className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b-2 border-r-2 border-amber-500/70 group-hover:w-4 group-hover:h-4 group-hover:border-amber-600/90 transition-all duration-500"></div>
+
+              {/* Content */}
+              <div className="mt-3 space-y-2">
+                {/* Title */}
+                <div className="text-center border-b border-amber-400/40 group-hover:border-amber-500/50 pb-1.5 transition-colors duration-500">
+                  <h3 className="text-amber-700 group-hover:text-amber-800 text-[15px] font-bold tracking-wide uppercase mb-0.5 transition-colors duration-500">
+                    Collector's Edition
+                  </h3>
+                  <p className="text-gray-600 text-[11px] font-medium">
+                    Palatial Higher Floor
+                  </p>
+                </div>
+
+                {/* Configurations */}
+                <div className="space-y-1">
+                  {/* 3 BHK */}
+                  <div className="bg-gradient-to-r from-amber-50 to-transparent group-hover:from-amber-100/80 border-l-2 border-amber-500 pl-2 py-0.5 transition-colors duration-500">
+                    <div className="flex items-center justify-between">
+                      <span className="text-amber-700 text-[13px] font-semibold">3 BHK</span>
+                      <span className="text-gray-900 text-xs font-bold">₹6.49Cr<sup className="text-[8px]">++</sup></span>
+                    </div>
+                  </div>
+
+                  {/* 4 BHK */}
+                  <div className="bg-gradient-to-r from-amber-50 to-transparent group-hover:from-amber-100/80 border-l-2 border-amber-500 pl-2 py-0.5 transition-colors duration-500">
+                    <div className="flex items-center justify-between">
+                      <span className="text-amber-700 text-[13px] font-semibold">4 BHK</span>
+                      <span className="text-gray-900 text-xs font-bold">₹8.69Cr<sup className="text-[8px]">++</sup></span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Exclusive Feature */}
+                <div className="pt-1.5 border-t border-amber-400/30 group-hover:border-amber-500/40 transition-colors duration-500">
+                  <div className="flex items-start gap-1.5">
+                    <div className="mt-0.5">
+                      <div className="w-1 h-1 rounded-full bg-amber-500 animate-ping"></div>
+                    </div>
+                    <p className="text-gray-700 text-[12px] font-medium leading-snug">
+                      Exclusive Jodi Options
+                    </p>
+                  </div>
+                </div>
+
+                {/* CTA Button */}
+                <button
+                  onClick={() => setShowContactForm(true)}
+                  className="w-full mt-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-[10px] font-bold py-1.5 px-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center gap-1"
+                >
+                  <span>Contact for Details</span>
+                  <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+
+                {/* Soft radial glow on hover */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-amber-300/0 group-hover:bg-amber-300/10 rounded-full blur-2xl transition-all duration-1000 ease-out pointer-events-none"></div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Decorative Elements */}
         <div className="absolute top-1/4 left-1/4 w-3 h-3 rounded-full bg-amber-400/80 animate-float" />
@@ -1418,24 +1533,35 @@ export default function Home() {
             {/* Left-aligned box with limited width */}
             <div className="reveal-left w-full lg:w-96 flex-shrink-0 float-luxury">
               <div className="group relative overflow-hidden rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-white hover:-translate-y-2 luxury-border pulse-glow">
+                {/* View Gallery Button */}
+                <div className="absolute top-4 right-4 z-10">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openGallery(['/image25.jpg', '/image26.webp', '/image27.jpg', '/image28.webp', '/image29.webp'], 'Luxury Amenities Gallery');
+                    }}
+                    className="bg-black/50 text-white text-xs px-3 py-1.5 rounded-full flex items-center transition-opacity duration-300 hover:opacity-90"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                    </svg>
+                    <span>View Gallery</span>
+                  </button>
+                </div>
+
                 {/* Premium Badge */}
-                <div className="absolute top-4 right-4 z-10 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                <div className="absolute top-14 right-4 z-10 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
                   EXCLUSIVE
                 </div>
 
                 <div className="relative h-64 overflow-hidden">
-                  <div className="absolute inset-0 overflow-hidden">
-                    <div className="flex h-full transition-transform duration-700 ease-in-out">
-                      {['/amenities/pool.jpg', '/amenities/gym.jpg', '/amenities/lounge.jpg'].map((img, idx) => (
-                        <div key={idx} className="min-w-full h-full">
-                          <div className="w-full h-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center relative">
-                            <span className="text-6xl">{['🏊', '🏋️', '🍹'][idx]}</span>
-                            <div className="absolute inset-0 shimmer opacity-20"></div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <Image
+                    src="/image29.webp"
+                    alt="Luxury Amenities"
+                    fill
+                    className="object-cover"
+                    quality={90}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-6">
                     <h3 className="text-3xl font-bold text-white luxury-heading">Luxury Amenities</h3>
@@ -1471,7 +1597,18 @@ export default function Home() {
                       ))}
                     </ul>
                   </div>
-                  <button className="w-full bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 text-white py-3 px-6 rounded-lg font-semibold hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl magnetic-button ripple-effect">
+                  <button 
+                    onClick={() => {
+                      const formSubmitted = localStorage.getItem('contactFormSubmitted');
+                      if (formSubmitted === 'true') {
+                        window.location.href = '/gallery#amenities';
+                      } else {
+                        setShowContactForm(true);
+                        setPendingGalleryAccess(true);
+                      }
+                    }}
+                    className="w-full bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 text-white py-3 px-6 rounded-lg font-semibold hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl magnetic-button ripple-effect"
+                  >
                     View All Amenities
                   </button>
                 </div>
@@ -1481,7 +1618,7 @@ export default function Home() {
             {/* Right side - Masonry Grid in a Container */}
             <div className="reveal-right flex-1 w-full">
               <div className="glass-morphism rounded-2xl shadow-2xl p-8 border border-amber-100/50 luxury-border hover:shadow-amber-200/50 transition-all duration-500">
-                <AmenitiesImageGrid />
+                <AmenitiesImageGrid onGalleryClick={() => setShowContactForm(true)} />
               </div>
             </div>
           </div>
@@ -1519,12 +1656,23 @@ export default function Home() {
                 className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
               />
               {/* Luxury gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-40 group-hover:opacity-70 transition-all duration-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-40 group-hover:opacity-70 transition-all duration-500 pointer-events-none"></div>
 
               {/* Blur overlay on hover */}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-500 backdrop-blur-0 group-hover:backdrop-blur-[2px]">
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-6 group-hover:translate-y-0">
-                  <button className="relative bg-white/95 text-amber-700 px-6 py-2.5 rounded-full font-semibold text-sm shadow-2xl hover:shadow-amber-500/30 hover:scale-110 transition-all duration-300 flex items-center gap-2 border-2 border-amber-200 hover:border-amber-400">
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-500 backdrop-blur-0 group-hover:backdrop-blur-[2px] pointer-events-none">
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-6 group-hover:translate-y-0 pointer-events-none">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const formSubmitted = localStorage.getItem('contactFormSubmitted');
+                      if (formSubmitted === 'true') {
+                        window.location.href = '/gallery';
+                      } else {
+                        setShowContactForm(true);
+                      }
+                    }}
+                    className="relative bg-white/95 text-amber-700 px-6 py-2.5 rounded-full font-semibold text-sm shadow-2xl hover:shadow-amber-500/30 hover:scale-110 transition-all duration-300 flex items-center gap-2 border-2 border-amber-200 hover:border-amber-400 pointer-events-auto z-20"
+                  >
                     <span className="relative z-10">View Details</span>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 relative z-10" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -1535,13 +1683,13 @@ export default function Home() {
               </div>
 
               {/* Shimmer effect */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
               </div>
 
               {/* Gold corner accents */}
-              <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+              <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
             </div>
 
             {/* Image 2 */}
@@ -1552,12 +1700,23 @@ export default function Home() {
                 className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
               />
               {/* Luxury gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-40 group-hover:opacity-70 transition-all duration-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-40 group-hover:opacity-70 transition-all duration-500 pointer-events-none"></div>
 
               {/* Blur overlay on hover */}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-500 backdrop-blur-0 group-hover:backdrop-blur-[2px]">
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-6 group-hover:translate-y-0">
-                  <button className="relative bg-white/95 text-amber-700 px-6 py-2.5 rounded-full font-semibold text-sm shadow-2xl hover:shadow-amber-500/30 hover:scale-110 transition-all duration-300 flex items-center gap-2 border-2 border-amber-200 hover:border-amber-400">
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-500 backdrop-blur-0 group-hover:backdrop-blur-[2px] pointer-events-none">
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-6 group-hover:translate-y-0 pointer-events-none">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const formSubmitted = localStorage.getItem('contactFormSubmitted');
+                      if (formSubmitted === 'true') {
+                        window.location.href = '/gallery';
+                      } else {
+                        setShowContactForm(true);
+                      }
+                    }}
+                    className="relative bg-white/95 text-amber-700 px-6 py-2.5 rounded-full font-semibold text-sm shadow-2xl hover:shadow-amber-500/30 hover:scale-110 transition-all duration-300 flex items-center gap-2 border-2 border-amber-200 hover:border-amber-400 pointer-events-auto z-20"
+                  >
                     <span className="relative z-10">View Details</span>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 relative z-10" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -1568,13 +1727,13 @@ export default function Home() {
               </div>
 
               {/* Shimmer effect */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
               </div>
 
               {/* Gold corner accents */}
-              <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+              <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-amber-400/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
             </div>
 
             {/* Image 3 */}
@@ -2002,7 +2161,96 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ---------------- ABOUT SECTION ---------------- */}
+      <section id="about" className="relative py-20 bg-gradient-to-b from-white via-gray-50 to-white overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10">
+          <div className="absolute top-1/4 -left-32 w-96 h-96 bg-amber-200 rounded-full mix-blend-multiply filter blur-3xl"></div>
+          <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-amber-300 rounded-full mix-blend-multiply filter blur-3xl"></div>
+        </div>
 
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            {/* Left Side - Content (Stick to left, end before middle) */}
+            <div className="lg:pr-8">
+              {/* Section Header */}
+              <div className="mb-8">
+                <div className="inline-block mb-4">
+                  <span className="text-amber-600 text-sm font-semibold tracking-[0.2em] uppercase bg-amber-100/50 px-4 py-2 rounded-full border border-amber-200">
+                    About Godrej Reserve
+                  </span>
+                </div>
+                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 luxury-heading">
+                  A Legacy of <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-amber-800">Excellence</span>
+                </h2>
+                <div className="w-24 h-1 bg-gradient-to-r from-amber-500 to-transparent mb-8"></div>
+              </div>
+
+              {/* Content */}
+              <div className="space-y-6 text-gray-700 leading-relaxed">
+                <p className="text-lg">
+                  <span className="font-bold text-amber-700">Godrej Reserve</span> is a special initiative made to provide you constant security and enable you to live without anxiety. Godrej Properties has recently secured an expansive <span className="font-semibold text-gray-900">18.6-acre land</span> in the vibrant city of Mumbai, strategically located in the thriving suburb of Kandivali.
+                </p>
+                
+                <p className="text-base">
+                  This acquisition marks a significant stride for the company as it seeks to enhance its presence in the highly competitive Mumbai real estate market. Godrej Reserve is a symphony of urban design and natural beauty offering a blend of Mumbai's modern living.
+                </p>
+                
+                <p className="text-base">
+                  The site is one of the <span className="font-semibold text-gray-900">largest freehold land parcels in western suburbs</span>, offering <span className="font-semibold text-amber-700">6 towers with 51 floors each</span>.
+                </p>
+
+                {/* Key Highlights */}
+                <div className="grid grid-cols-2 gap-4 pt-6">
+                  <div className="bg-gradient-to-br from-amber-50 to-white p-4 rounded-xl border border-amber-200">
+                    <p className="text-3xl font-bold text-amber-700 mb-1">18.6</p>
+                    <p className="text-xs text-gray-600 uppercase tracking-wide">Acres of Land</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-amber-50 to-white p-4 rounded-xl border border-amber-200">
+                    <p className="text-3xl font-bold text-amber-700 mb-1">6</p>
+                    <p className="text-xs text-gray-600 uppercase tracking-wide">Premium Towers</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-amber-50 to-white p-4 rounded-xl border border-amber-200">
+                    <p className="text-3xl font-bold text-amber-700 mb-1">51</p>
+                    <p className="text-xs text-gray-600 uppercase tracking-wide">Floors Each</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-amber-50 to-white p-4 rounded-xl border border-amber-200">
+                    <p className="text-3xl font-bold text-amber-700 mb-1">Western</p>
+                    <p className="text-xs text-gray-600 uppercase tracking-wide">Suburb Location</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Side - Images */}
+            <div className="space-y-6 mt-16">
+              {/* Image 1 */}
+              <div className="relative group overflow-hidden rounded-2xl shadow-2xl border-2 border-amber-200/50 hover:border-amber-400/80 transition-all duration-700">
+                <Image
+                  src="/image30.jpg"
+                  alt="Godrej Reserve - View 1"
+                  width={600}
+                  height={400}
+                  className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              </div>
+
+              {/* Image 2 */}
+              <div className="relative group overflow-hidden rounded-2xl shadow-2xl border-2 border-amber-200/50 hover:border-amber-400/80 transition-all duration-700">
+                <Image
+                  src="/image31.jpg"
+                  alt="Godrej Reserve - View 2"
+                  width={600}
+                  height={400}
+                  className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Gallery Modal */}
       <GalleryModal

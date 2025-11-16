@@ -295,6 +295,18 @@ export default function GalleryPage() {
     }, 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Handle hash navigation to amenities section
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash === '#amenities') {
+      // Wait for page to load and filter to be set
+      setTimeout(() => {
+        filterItems('Amenities');
+        // Scroll to top of page after filtering
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 500);
+    }
+  }, []);
   
   const ITEMS_PER_PAGE = 12; // Load 12 items at a time for better performance
 
