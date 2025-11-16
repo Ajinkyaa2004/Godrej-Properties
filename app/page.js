@@ -370,6 +370,9 @@ export default function Home() {
   // Gallery access control - tracks if user clicked gallery
   const [pendingGalleryAccess, setPendingGalleryAccess] = useState(false);
 
+  // EOI Box dropdown state for mobile
+  const [eoiDropdownOpen, setEoiDropdownOpen] = useState(false);
+
   useEffect(() => {
     console.log('ContactForm initialization started');
     
@@ -885,8 +888,8 @@ export default function Home() {
         {/* Animated Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/70" />
 
-        {/* EOI Premium Box - Bottom Right */}
-        <div className="absolute bottom-24 right-0 z-20 animate-fade-in animate-bounce-slow" style={{ animationDelay: '1.5s', animationFillMode: 'both' }}>
+        {/* EOI Premium Box - Desktop Version (Hidden on Mobile) */}
+        <div className="hidden md:block absolute bottom-24 right-0 z-20 animate-fade-in animate-bounce-slow" style={{ animationDelay: '1.5s', animationFillMode: 'both' }}>
           <div className="relative group">
             {/* Soft glow effect */}
             <div className="absolute -inset-1 bg-gradient-to-r from-amber-300/50 via-amber-400/50 to-amber-500/50 rounded-xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-700 ease-out"></div>
@@ -962,6 +965,125 @@ export default function Home() {
 
                 {/* Soft radial glow on hover */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-amber-300/0 group-hover:bg-amber-300/10 rounded-full blur-2xl transition-all duration-1000 ease-out pointer-events-none"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* EOI Mobile Collapsible Tab (Visible on Mobile Only) */}
+        <div className="md:hidden fixed right-0 top-1/2 -translate-y-1/2 z-30 animate-fade-in" style={{ animationDelay: '1.5s', animationFillMode: 'both' }}>
+          {/* Collapsible Tab Button */}
+          <button
+            onClick={() => setEoiDropdownOpen(!eoiDropdownOpen)}
+            className="bg-gradient-to-br from-amber-600 via-amber-500 to-amber-600 text-white px-2 py-6 rounded-l-xl shadow-2xl flex flex-col items-center gap-2 hover:from-amber-500 hover:to-amber-700 transition-all duration-300 border-2 border-amber-400/50"
+          >
+            <span className="text-[10px] font-bold tracking-widest [writing-mode:vertical-rl] rotate-180">
+              EOI OPEN
+            </span>
+            <svg 
+              className={`w-4 h-4 transition-transform duration-300 ${eoiDropdownOpen ? 'rotate-180' : ''}`}
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {/* Dropdown Content */}
+          <div 
+            className={`absolute right-0 top-0 transition-all duration-500 ease-out ${
+              eoiDropdownOpen 
+                ? 'translate-x-0 opacity-100' 
+                : 'translate-x-full opacity-0 pointer-events-none'
+            }`}
+          >
+            <div className="relative group mr-2">
+              {/* Soft glow effect */}
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-300/50 via-amber-400/50 to-amber-500/50 rounded-xl blur-lg opacity-60"></div>
+              
+              {/* Main Box */}
+              <div className="relative bg-white/30 backdrop-blur-2xl border-2 border-white/40 rounded-xl shadow-2xl p-3 w-64" style={{ background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
+                {/* Close Button */}
+                <button
+                  onClick={() => setEoiDropdownOpen(false)}
+                  className="absolute -top-2 -right-2 bg-amber-600 text-white rounded-full p-1 shadow-lg hover:bg-amber-700 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+
+                {/* Premium Badge */}
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+                  <span className="inline-block px-3 py-0.5 text-[11px] font-bold tracking-widest text-white bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 rounded-full shadow-lg animate-pulse">
+                    EOI OPEN
+                  </span>
+                </div>
+
+                {/* Decorative Corner Elements */}
+                <div className="absolute top-1.5 left-1.5 w-3 h-3 border-t-2 border-l-2 border-amber-500/70"></div>
+                <div className="absolute top-1.5 right-1.5 w-3 h-3 border-t-2 border-r-2 border-amber-500/70"></div>
+                <div className="absolute bottom-1.5 left-1.5 w-3 h-3 border-b-2 border-l-2 border-amber-500/70"></div>
+                <div className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b-2 border-r-2 border-amber-500/70"></div>
+
+                {/* Content */}
+                <div className="mt-3 space-y-2">
+                  {/* Title */}
+                  <div className="text-center border-b border-amber-400/40 pb-1.5">
+                    <h3 className="text-amber-700 text-[14px] font-bold tracking-wide uppercase mb-0.5">
+                      Collector's Edition
+                    </h3>
+                    <p className="text-gray-600 text-[10px] font-medium">
+                      Palatial Higher Floor
+                    </p>
+                  </div>
+
+                  {/* Configurations */}
+                  <div className="space-y-1">
+                    {/* 3 BHK */}
+                    <div className="bg-gradient-to-r from-amber-50 to-transparent border-l-2 border-amber-500 pl-2 py-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-amber-700 text-[12px] font-semibold">3 BHK</span>
+                        <span className="text-gray-900 text-[11px] font-bold">₹6.49Cr<sup className="text-[7px]">++</sup></span>
+                      </div>
+                    </div>
+
+                    {/* 4 BHK */}
+                    <div className="bg-gradient-to-r from-amber-50 to-transparent border-l-2 border-amber-500 pl-2 py-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-amber-700 text-[12px] font-semibold">4 BHK</span>
+                        <span className="text-gray-900 text-[11px] font-bold">₹8.69Cr<sup className="text-[7px]">++</sup></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Exclusive Feature */}
+                  <div className="pt-1.5 border-t border-amber-400/30">
+                    <div className="flex items-start gap-1.5">
+                      <div className="mt-0.5">
+                        <div className="w-1 h-1 rounded-full bg-amber-500 animate-ping"></div>
+                      </div>
+                      <p className="text-gray-700 text-[11px] font-medium leading-snug">
+                        Exclusive Jodi Options
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* CTA Button */}
+                  <button
+                    onClick={() => {
+                      setShowContactForm(true);
+                      setEoiDropdownOpen(false);
+                    }}
+                    className="w-full mt-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-[10px] font-bold py-2 px-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-1"
+                  >
+                    <span>Contact for Details</span>
+                    <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
