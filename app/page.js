@@ -2361,7 +2361,7 @@ export default function Home() {
               {/* Image 2 */}
               <div className="relative group overflow-hidden rounded-2xl shadow-2xl border-2 border-amber-200/50 hover:border-amber-400/80 transition-all duration-700">
                 <Image
-                  src="/image31.jpg"
+                  src="/Image31.jpg"
                   alt="Godrej Reserve - View 2"
                   width={600}
                   height={400}
