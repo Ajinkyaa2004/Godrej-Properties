@@ -368,7 +368,7 @@ export default function GalleryPage() {
   };
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-50/30 transition-all duration-1000 ${pageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+      <main className={`min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-50/30 transition-all duration-1000 ${pageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} role="main" aria-label="Godrej Reserve Property Gallery">
       {/* Responsive Premium Header */}
       <div className="sticky top-0 z-50 bg-gradient-to-r from-white/95 via-amber-50/95 to-white/95 backdrop-blur-xl border-b border-gradient-to-r border-amber-200/30 shadow-xl">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4 lg:py-6">
@@ -555,6 +555,4 @@ export default function GalleryPage() {
         currentIndex={currentIndex}
         setCurrentIndex={setCurrentIndex}
       />
-    </div>
-  );
-}
+    />\n    </main>\n  );\n}

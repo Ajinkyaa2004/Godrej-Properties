@@ -361,6 +361,134 @@ export default function Home() {
   const [userInput, setUserInput] = useState('');
   const messagesEndRef = useRef(null);
 
+  // Structured Data for SEO
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "ApartmentComplex",
+        "name": "Godrej Reserve",
+        "description": "Premium luxury residential project offering 3 & 4 BHK apartments in Kandivali East, Mumbai. Spread across 18.6 acres with world-class amenities.",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Kandivali East",
+          "addressLocality": "Mumbai",
+          "addressRegion": "Maharashtra",
+          "postalCode": "400101",
+          "addressCountry": "IN"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "19.2074",
+          "longitude": "72.8777"
+        },
+        "numberOfAccommodationUnits": "Multiple",
+        "amenityFeature": [
+          { "@type": "LocationFeatureSpecification", "name": "Swimming Pool" },
+          { "@type": "LocationFeatureSpecification", "name": "Fitness Center" },
+          { "@type": "LocationFeatureSpecification", "name": "Clubhouse" },
+          { "@type": "LocationFeatureSpecification", "name": "Landscaped Gardens" },
+          { "@type": "LocationFeatureSpecification", "name": "Children Play Area" },
+          { "@type": "LocationFeatureSpecification", "name": "24/7 Security" }
+        ],
+        "containsPlace": [
+          {
+            "@type": "Accommodation",
+            "name": "3 BHK Apartment - 1100 sq.ft",
+            "floorSize": { "@type": "QuantitativeValue", "value": "1100", "unitCode": "SQF" },
+            "numberOfRooms": "3",
+            "offers": {
+              "@type": "Offer",
+              "price": "37500000",
+              "priceCurrency": "INR",
+              "availability": "https://schema.org/InStock"
+            }
+          },
+          {
+            "@type": "Accommodation",
+            "name": "3 BHK Apartment - 1330+ sq.ft",
+            "floorSize": { "@type": "QuantitativeValue", "value": "1330", "unitCode": "SQF" },
+            "numberOfRooms": "3",
+            "offers": {
+              "@type": "Offer",
+              "price": "51500000",
+              "priceCurrency": "INR",
+              "availability": "https://schema.org/InStock"
+            }
+          },
+          {
+            "@type": "Accommodation",
+            "name": "3 BHK Apartment - 1450+ sq.ft",
+            "floorSize": { "@type": "QuantitativeValue", "value": "1450", "unitCode": "SQF" },
+            "numberOfRooms": "3",
+            "offers": {
+              "@type": "Offer",
+              "price": "57500000",
+              "priceCurrency": "INR",
+              "availability": "https://schema.org/InStock"
+            }
+          },
+          {
+            "@type": "Accommodation",
+            "name": "4 BHK Apartment - 2000+ sq.ft",
+            "floorSize": { "@type": "QuantitativeValue", "value": "2000", "unitCode": "SQF" },
+            "numberOfRooms": "4",
+            "offers": {
+              "@type": "Offer",
+              "price": "72500000",
+              "priceCurrency": "INR",
+              "availability": "https://schema.org/InStock"
+            }
+          }
+        ]
+      },
+      {
+        "@type": "RealEstateAgent",
+        "name": "Godrej Properties",
+        "description": "Leading real estate developer in India, offering premium residential and commercial properties.",
+        "url": "https://godrejreserve.com",
+        "logo": "https://godrejreserve.com/Layer 5.png",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Kandivali East",
+          "addressLocality": "Mumbai",
+          "addressRegion": "Maharashtra",
+          "postalCode": "400101",
+          "addressCountry": "IN"
+        },
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "Sales",
+          "areaServed": "IN",
+          "availableLanguage": ["English", "Hindi", "Marathi"]
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://godrejreserve.com"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Kandivali East",
+            "item": "https://godrejreserve.com#location"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Gallery",
+            "item": "https://godrejreserve.com/gallery"
+          }
+        ]
+      }
+    ]
+  };
+
   // Auto-popup contact form after 10 seconds
   const [showContactForm, setShowContactForm] = useState(false);
   
@@ -694,6 +822,10 @@ export default function Home() {
     <>
       <Head>
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
       </Head>
       {/* ================ PREMIUM GLASS NAVBAR ================ */}
       <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-1000 ease-out transform ${isNavbarVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`}>
@@ -870,12 +1002,13 @@ export default function Home() {
       <section
         id="home"
         className="relative h-[100vh] flex items-center justify-center overflow-hidden"
+        aria-label="Godrej Reserve Hero Banner - Luxury Apartments in Kandivali East Mumbai"
       >
         {/* Hero Background Image */}
         <div className="absolute inset-0 -z-10">
           <Image
             src="/hero.png"
-            alt="Godrej Reserve Hero Background"
+            alt="Godrej Reserve Luxury Apartments Kandivali East Mumbai - Premium 3 BHK and 4 BHK Residential Complex with Modern Architecture"
             fill
             className="object-cover"
             style={{ objectPosition: 'center 20%' }}
@@ -1167,7 +1300,7 @@ export default function Home() {
       </section>
 
       {/* ---------------- RESIDENCE CONFIGURATIONS ---------------- */}
-      <section id="configurations" className="relative py-20 overflow-hidden bg-gradient-to-b from-white to-amber-50">
+      <section id="configurations" className="relative py-20 overflow-hidden bg-gradient-to-b from-white to-amber-50" aria-label="3 BHK and 4 BHK Apartment Configurations with Pricing">
         {/* Decorative Elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10">
           <div className="absolute top-1/4 -left-20 w-96 h-96 bg-amber-200 rounded-full mix-blend-multiply filter blur-3xl"></div>
@@ -1615,7 +1748,7 @@ export default function Home() {
 
       {/* Amenities Section */}
 
-      <section id="amenities" className="py-20 luxury-gradient-bg relative overflow-hidden">
+      <section id="amenities" className="py-20 luxury-gradient-bg relative overflow-hidden" aria-label="World Class Amenities - Swimming Pool, Gym, Clubhouse, Gardens">
         {/* Decorative background elements */}
         <div className="absolute top-10 right-10 w-72 h-72 bg-gradient-to-br from-amber-200/20 to-amber-400/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-10 left-10 w-96 h-96 bg-gradient-to-tr from-amber-300/10 to-amber-100/20 rounded-full blur-3xl"></div>
@@ -1895,7 +2028,7 @@ export default function Home() {
       </section>
 
       {/* ---------------- LOCATION & CONNECTIVITY SECTION ---------------- */}
-      <section id="location" className="relative py-20 overflow-hidden bg-gradient-to-b from-white via-gray-50 to-white">
+      <section id="location" className="relative py-20 overflow-hidden bg-gradient-to-b from-white via-gray-50 to-white" aria-label="Prime Location in Kandivali East Mumbai with Excellent Connectivity">
         {/* Decorative Background Elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10">
           <div className="absolute top-1/4 -left-20 w-96 h-96 bg-amber-200 rounded-full mix-blend-multiply filter blur-3xl"></div>
