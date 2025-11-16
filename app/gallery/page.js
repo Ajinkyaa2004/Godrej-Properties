@@ -555,4 +555,6 @@ export default function GalleryPage() {
         currentIndex={currentIndex}
         setCurrentIndex={setCurrentIndex}
       />
-    />\n    </main>\n  );\n}
+    </main>
+  );
+}
