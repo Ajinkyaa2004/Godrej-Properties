@@ -1383,7 +1383,7 @@ export default function Home() {
             <div className="p-6">
               <div className="mb-4">
                 <div className="flex justify-between items-baseline mb-1">
-                  <span className="text-2xl font-bold text-gray-800">₹3.75 Cr*</span>
+                  <span className="text-2xl font-bold text-gray-800">₹4.50 Cr*</span>
                   <span className="text-sm text-gray-500">Starting Price</span>
                 </div>
                 <div className="w-fit">
