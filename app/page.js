@@ -83,7 +83,7 @@ const GalleryModal = ({ isOpen, onClose, images, title }) => {
                 <div className="animate-spin rounded-full h-16 w-16 border-4 border-amber-500 border-t-transparent"></div>
               </div>
             )}
-            
+
             {/* Error State */}
             {imageError && (
               <div className="absolute inset-0 flex items-center justify-center text-white">
@@ -95,7 +95,7 @@ const GalleryModal = ({ isOpen, onClose, images, title }) => {
                 </div>
               </div>
             )}
-            
+
             {/* Main Image */}
             <img
               src={images[currentIndex]}
@@ -138,13 +138,13 @@ const GalleryModal = ({ isOpen, onClose, images, title }) => {
               key={idx}
               onClick={() => setCurrentIndex(idx)}
               className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-300 ${idx === currentIndex
-                  ? 'border-amber-500 scale-110 shadow-lg shadow-amber-500/50'
-                  : 'border-white/30 hover:border-white/60'
+                ? 'border-amber-500 scale-110 shadow-lg shadow-amber-500/50'
+                : 'border-white/30 hover:border-white/60'
                 }`}
             >
-              <img 
-                src={img} 
-                alt={`Thumbnail ${idx + 1}`} 
+              <img
+                src={img}
+                alt={`Thumbnail ${idx + 1}`}
                 className="w-full h-full object-cover"
                 loading="lazy"
               />
@@ -248,7 +248,7 @@ const OldGalleryModal = ({ isOpen, onClose, images, title }) => {
 const StaticImageBox = ({ image, alt, onGalleryClick }) => {
   const handleClick = () => {
     const formSubmitted = localStorage.getItem('contactFormSubmitted');
-    
+
     if (formSubmitted === 'true') {
       // User has filled the form, redirect to gallery
       window.location.href = '/gallery';
@@ -261,7 +261,7 @@ const StaticImageBox = ({ image, alt, onGalleryClick }) => {
   };
 
   return (
-    <div 
+    <div
       className="relative overflow-hidden rounded-xl shadow-lg group cursor-pointer h-full transition-shadow duration-300 hover:shadow-xl"
       onClick={handleClick}
     >
@@ -369,6 +369,7 @@ export default function Home() {
         "@type": "ApartmentComplex",
         "name": "Godrej Reserve",
         "description": "Premium luxury residential project offering 3 & 4 BHK apartments in Kandivali East, Mumbai. Spread across 18.6 acres with world-class amenities.",
+        "priceRange": "₹3.75 Cr - ₹8.50 Cr",
         "address": {
           "@type": "PostalAddress",
           "streetAddress": "Kandivali East",
@@ -464,6 +465,82 @@ export default function Home() {
         }
       },
       {
+        "@type": "LocalBusiness",
+        "name": "Godrej Reserve Sales Office",
+        "image": "https://godrejreserve.com/hero.png",
+        "description": "Luxury residential apartments sales office in Kandivali East, Mumbai",
+        "@id": "https://godrejreserve.com",
+        "url": "https://godrejreserve.com",
+        "telephone": "+91-XXXXXXXXXX",
+        "priceRange": "₹₹₹₹",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Kandivali East",
+          "addressLocality": "Mumbai",
+          "addressRegion": "Maharashtra",
+          "postalCode": "400101",
+          "addressCountry": "IN"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "19.2074",
+          "longitude": "72.8777"
+        },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            "opens": "09:00",
+            "closes": "18:00"
+          }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is the price range for apartments in Godrej Reserve?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Godrej Reserve offers premium apartments starting from ₹3.75 Cr for 3 BHK (1100 sq.ft) up to ₹8.50 Cr for 4 BHK (2000+ sq.ft). Prices vary based on configuration, floor, and view."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What configurations are available at Godrej Reserve?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Godrej Reserve offers spacious 3 BHK apartments (1100 sq.ft, 1330+ sq.ft, 1450+ sq.ft) and luxurious 4 BHK apartments (2000+ sq.ft) with premium specifications and world-class amenities."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Where is Godrej Reserve located?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Godrej Reserve is located in Kandivali East, Mumbai, with excellent connectivity to Western Express Highway, Dahisar Metro, and major landmarks. The project spans 18.6 acres with just 6 towers."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "When is the expected possession date?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The expected possession date for Godrej Reserve is December 2027. The project is currently under construction with regular updates available."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is Godrej Reserve RERA approved?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, Godrej Reserve is RERA approved with Registration Number: P51800052847. The project is fully compliant with all regulations."
+            }
+          }
+        ]
+      },
+      {
         "@type": "BreadcrumbList",
         "itemListElement": [
           {
@@ -491,10 +568,10 @@ export default function Home() {
 
   // Auto-popup contact form after 10 seconds
   const [showContactForm, setShowContactForm] = useState(false);
-  
+
   // Schedule Visit form state
   const [showScheduleVisitForm, setShowScheduleVisitForm] = useState(false);
-  
+
   // Gallery access control - tracks if user clicked gallery
   const [pendingGalleryAccess, setPendingGalleryAccess] = useState(false);
 
@@ -503,12 +580,12 @@ export default function Home() {
 
   useEffect(() => {
     console.log('ContactForm initialization started');
-    
+
     const checkUserAndShowForm = async () => {
       try {
         // Get user's IP address and other identifiers
         const ipAddress = 'user_ip'; // Will be set server-side
-        
+
         // Check if user already submitted (database check)
         const checkResponse = await fetch('/api/contact/check', {
           method: 'POST',
@@ -523,7 +600,7 @@ export default function Home() {
         });
 
         const checkResult = await checkResponse.json();
-        
+
         if (checkResult.exists) {
           console.log('User already submitted form, not showing popup');
           return; // Don't show form
@@ -561,20 +638,20 @@ export default function Home() {
   const markAsSubmitted = () => {
     localStorage.setItem('contactFormSubmitted', 'true');
     setShowContactForm(false);
-    
+
     // If user was trying to access gallery, navigate there now
     if (pendingGalleryAccess) {
       setPendingGalleryAccess(false);
       window.location.href = '/gallery#amenities';
     }
   };
-  
+
   const handleGalleryClick = (e) => {
     e.preventDefault();
-    
+
     // Check if user already submitted form
     const formSubmitted = localStorage.getItem('contactFormSubmitted');
-    
+
     if (formSubmitted === 'true') {
       // User already filled form, allow direct access
       window.location.href = '/gallery';
@@ -602,7 +679,7 @@ export default function Home() {
     const observer = new IntersectionObserver((entries) => {
       // Batch DOM updates for better performance
       const updates = entries.filter(entry => entry.isIntersecting);
-      
+
       if (updates.length > 0) {
         requestAnimationFrame(() => {
           updates.forEach(entry => {
@@ -845,20 +922,20 @@ export default function Home() {
                 <a href="#home" className="relative z-10 flex items-center">
                   {/* Logo */}
                   <div className="flex flex-col">
-                    <Image 
-                      src="/Layer 5.png" 
-                      alt="Godrej Reserve Logo" 
-                      width={280} 
+                    <Image
+                      src="/Layer 5.png"
+                      alt="Godrej Reserve Logo"
+                      width={280}
                       height={70}
                       className="object-contain w-[220px] sm:w-[240px] md:w-[260px] lg:w-[280px] h-auto"
                       priority
                     />
                   </div>
                 </a>
-                
+
                 {/* Vertical Divider */}
                 <div className="h-12 w-px bg-gradient-to-b from-transparent via-gray-300 to-transparent"></div>
-                
+
                 {/* Badge and Location */}
                 <div className="flex flex-col gap-1.5">
                   <div className="flex items-center">
@@ -1026,7 +1103,7 @@ export default function Home() {
           <div className="relative group">
             {/* Soft glow effect */}
             <div className="absolute -inset-1 bg-gradient-to-r from-amber-300/50 via-amber-400/50 to-amber-500/50 rounded-xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-700 ease-out"></div>
-            
+
             {/* Main Box */}
             <div className="relative bg-gradient-to-br from-amber-50/95 via-white/95 to-amber-50/95 backdrop-blur-xl border-2 border-amber-400/60 group-hover:border-amber-500/80 rounded-xl shadow-2xl p-3 w-56 mr-4 transition-all duration-700 ease-out">
               {/* Premium Badge */}
@@ -1113,10 +1190,10 @@ export default function Home() {
             <span className="text-[10px] font-bold tracking-widest [writing-mode:vertical-rl] rotate-180">
               EOI OPEN
             </span>
-            <svg 
+            <svg
               className={`w-4 h-4 transition-transform duration-300 ${eoiDropdownOpen ? 'rotate-180' : ''}`}
-              fill="none" 
-              stroke="currentColor" 
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
@@ -1124,17 +1201,16 @@ export default function Home() {
           </button>
 
           {/* Dropdown Content */}
-          <div 
-            className={`absolute right-0 top-0 transition-all duration-500 ease-out ${
-              eoiDropdownOpen 
-                ? 'translate-x-0 opacity-100' 
+          <div
+            className={`absolute right-0 top-0 transition-all duration-500 ease-out ${eoiDropdownOpen
+                ? 'translate-x-0 opacity-100'
                 : 'translate-x-full opacity-0 pointer-events-none'
-            }`}
+              }`}
           >
             <div className="relative group mr-2">
               {/* Soft glow effect */}
               <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-300/50 via-amber-400/50 to-amber-500/50 rounded-xl blur-lg opacity-60"></div>
-              
+
               {/* Main Box */}
               <div className="relative bg-white/30 backdrop-blur-2xl border-2 border-white/40 rounded-xl shadow-2xl p-3 w-64" style={{ background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
                 {/* Close Button */}
@@ -1335,7 +1411,7 @@ export default function Home() {
             </p>
           </div></div>
 
-   
+
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
           {/* 3 BHK - 1100 sq.ft */}
@@ -1432,7 +1508,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => setShowContactForm(true)}
                 className="mt-6 w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition-opacity cursor-pointer"
               >
@@ -1534,7 +1610,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => setShowContactForm(true)}
                 className="mt-6 w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition-opacity cursor-pointer"
               >
@@ -1636,7 +1712,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => setShowContactForm(true)}
                 className="mt-6 w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition-opacity cursor-pointer"
               >
@@ -1734,7 +1810,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => setShowContactForm(true)}
                 className="mt-6 w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 px-6 rounded-lg font-medium hover:opacity-90 transition-opacity cursor-pointer"
               >
@@ -1852,7 +1928,7 @@ export default function Home() {
                       ))}
                     </ul>
                   </div>
-                  <button 
+                  <button
                     onClick={() => {
                       const formSubmitted = localStorage.getItem('contactFormSubmitted');
                       if (formSubmitted === 'true') {
@@ -1916,7 +1992,7 @@ export default function Home() {
               {/* Blur overlay on hover */}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-500 backdrop-blur-0 group-hover:backdrop-blur-[2px] pointer-events-none">
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-6 group-hover:translate-y-0 pointer-events-none">
-                  <button 
+                  <button
                     onClick={(e) => {
                       e.stopPropagation();
                       const formSubmitted = localStorage.getItem('contactFormSubmitted');
@@ -1960,7 +2036,7 @@ export default function Home() {
               {/* Blur overlay on hover */}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-500 backdrop-blur-0 group-hover:backdrop-blur-[2px] pointer-events-none">
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-6 group-hover:translate-y-0 pointer-events-none">
-                  <button 
+                  <button
                     onClick={(e) => {
                       e.stopPropagation();
                       const formSubmitted = localStorage.getItem('contactFormSubmitted');
@@ -2211,10 +2287,10 @@ export default function Home() {
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border-3 border-amber-200 hover:border-amber-400 hover:shadow-amber-300/50 transition-all duration-700 ease-in-out group">
                 {/* Map Container */}
                 <div className="relative bg-gradient-to-br from-amber-50 via-white to-amber-50">
-                  <Image 
-                    src="/map.png" 
-                    alt="Location Map - Godrej Reserve, Kandivali East" 
-                    width={800} 
+                  <Image
+                    src="/map.png"
+                    alt="Location Map - Godrej Reserve, Kandivali East"
+                    width={800}
                     height={800}
                     className="w-full h-auto object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
                     priority
@@ -2232,9 +2308,9 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-amber-500/5 pointer-events-none z-5"></div>
 
                   {/* Address Badge */}
-                  <a 
-                    href="https://maps.app.goo.gl/RNfEUo2cq8qorHbPA" 
-                    target="_blank" 
+                  <a
+                    href="https://maps.app.goo.gl/RNfEUo2cq8qorHbPA"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="absolute bottom-4 left-4 right-4 bg-white/95 rounded-lg p-2.5 shadow-xl border-2 border-amber-300 z-20 hover:bg-white hover:border-amber-400 hover:shadow-2xl transition-all duration-300 cursor-pointer group "
                   >
@@ -2336,7 +2412,7 @@ export default function Home() {
                 <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 group-hover:text-amber-700 transition-colors duration-300">
                   Pricing & Payment Plans
                 </h3>
-                
+
                 {/* Collector's Edition Badge */}
                 <div className="mb-4 p-3 bg-gradient-to-r from-amber-50 to-amber-100 rounded-lg border-l-4 border-amber-500">
                   <p className="text-xs font-bold text-amber-900 uppercase tracking-wider mb-1">Presenting The Collector's Edition</p>
@@ -2346,12 +2422,12 @@ export default function Home() {
                 <p className="text-gray-600 text-sm mb-4">
                   Benefit from transparent pricing, launch offers and tailored EMIs designed for discerning buyers.
                 </p>
-                
+
                 <div className="flex flex-wrap gap-2 mb-4 text-xs font-medium">
                   <span className="px-3 py-1 bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-full shadow-sm">10:20:30:40 Payment Plan^</span>
                   <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">EOI Window Open</span>
                 </div>
-                
+
                 <div className="mt-auto pt-4 border-t border-amber-100">
                   <div className="mb-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
                     <p className="text-xs font-bold text-amber-900 mb-2">Palatial Higher Floor Residencies</p>
@@ -2446,11 +2522,11 @@ export default function Home() {
                 <p className="text-lg">
                   <span className="font-bold text-amber-700">Godrej Reserve</span> is a special initiative made to provide you constant security and enable you to live without anxiety. Godrej Properties has recently secured an expansive <span className="font-semibold text-gray-900">18.6-acre land</span> in the vibrant city of Mumbai, strategically located in the thriving suburb of Kandivali.
                 </p>
-                
+
                 <p className="text-base">
                   This acquisition marks a significant stride for the company as it seeks to enhance its presence in the highly competitive Mumbai real estate market. Godrej Reserve is a symphony of urban design and natural beauty offering a blend of Mumbai's modern living.
                 </p>
-                
+
                 <p className="text-base">
                   The site is one of the <span className="font-semibold text-gray-900">largest freehold land parcels in western suburbs</span>, offering <span className="font-semibold text-amber-700">6 towers with 51 floors each</span>.
                 </p>
@@ -2555,8 +2631,8 @@ export default function Home() {
                 >
                   <div
                     className={`max-w-[85%] md:max-w-[80%] p-2.5 md:p-3 rounded-2xl ${msg.type === 'user'
-                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-br-none'
-                        : 'bg-white text-gray-800 shadow-md rounded-bl-none border border-gray-200'
+                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-br-none'
+                      : 'bg-white text-gray-800 shadow-md rounded-bl-none border border-gray-200'
                       }`}
                   >
                     <p className="text-xs md:text-sm whitespace-pre-line">{msg.text}</p>
@@ -2670,15 +2746,15 @@ export default function Home() {
       </div>
 
       {/* Auto-Popup Contact Form - Outside main container */}
-      <ContactForm 
-        isOpen={showContactForm} 
+      <ContactForm
+        isOpen={showContactForm}
         onClose={hideContactForm}
         markAsSubmitted={markAsSubmitted}
       />
 
       {/* Schedule Visit Form - Outside main container */}
-      <ScheduleVisitForm 
-        isOpen={showScheduleVisitForm} 
+      <ScheduleVisitForm
+        isOpen={showScheduleVisitForm}
         onClose={() => setShowScheduleVisitForm(false)}
       />
     </>
