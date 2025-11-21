@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+
 import { NextResponse } from 'next/server';
 
 // MongoDB configuration - REQUIRED
@@ -97,36 +97,15 @@ if (!MONGODB_URI) {
   console.error('Please create .env.local file with: MONGODB_URI=mongodb://localhost:27017/godrej-reserve');
 }
 
-let client, clientPromise;
+import clientPromise from '../../../lib/mongodb';
 
-if (MONGODB_URI) {
-  client = new MongoClient(MONGODB_URI);
-  clientPromise = client.connect();
-}
-
+// MongoDB configuration
 const DB_NAME = 'godrej-reserve';
 const COLLECTION_NAME = 'contacts';
 
-// Lazy connection function
-let cachedClient = null;
-let cachedDb = null;
-
 async function connectToDatabase() {
-  if (!MONGODB_URI) {
-    throw new Error('MONGODB_URI is not defined');
-  }
-
-  if (cachedClient && cachedDb) {
-    return { client: cachedClient, db: cachedDb };
-  }
-
-  const client = new MongoClient(MONGODB_URI);
-  await client.connect();
+  const client = await clientPromise;
   const db = client.db(DB_NAME);
-
-  cachedClient = client;
-  cachedDb = db;
-
   return { client, db };
 }
 

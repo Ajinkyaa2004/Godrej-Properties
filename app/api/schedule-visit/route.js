@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+
 import { NextResponse } from 'next/server';
 
 // MongoDB configuration - REQUIRED
@@ -115,36 +115,14 @@ if (!MONGODB_URI) {
   console.error('❌ MONGODB_URI is missing from .env.local file');
 }
 
-let client, clientPromise;
-
-if (MONGODB_URI) {
-  client = new MongoClient(MONGODB_URI);
-  clientPromise = client.connect();
-}
+import clientPromise from '../../../lib/mongodb';
 
 const DB_NAME = 'godrej-reserve';
 const COLLECTION_NAME = 'schedule-visits'; // Separate collection for visit bookings
 
-// Lazy connection function
-let cachedClient = null;
-let cachedDb = null;
-
 async function connectToDatabase() {
-  if (!MONGODB_URI) {
-    throw new Error('MONGODB_URI is not defined');
-  }
-
-  if (cachedClient && cachedDb) {
-    return { client: cachedClient, db: cachedDb };
-  }
-
-  const client = new MongoClient(MONGODB_URI);
-  await client.connect();
+  const client = await clientPromise;
   const db = client.db(DB_NAME);
-
-  cachedClient = client;
-  cachedDb = db;
-
   return { client, db };
 }
 
