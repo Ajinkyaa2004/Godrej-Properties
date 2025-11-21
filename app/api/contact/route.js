@@ -16,7 +16,7 @@ async function sendConfirmationEmail(contactData) {
 
   try {
     const nodemailer = (await import('nodemailer')).default;
-    
+
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT || '587'),
@@ -135,8 +135,8 @@ export async function POST(request) {
     // Check if MongoDB is configured
     if (!MONGODB_URI) {
       return NextResponse.json(
-        { 
-          error: 'MongoDB not configured', 
+        {
+          error: 'MongoDB not configured',
           message: 'Please create .env.local file with MONGODB_URI=mongodb://localhost:27017/godrej-reserve',
           setup: 'Check the env-setup.md file for instructions'
         },
@@ -194,10 +194,10 @@ export async function POST(request) {
 
       // Metadata
       submittedAt: new Date(),
-      ipAddress: request.headers.get('x-forwarded-for') || 
-                 request.headers.get('x-real-ip') || 
-                 'unknown',
-      
+      ipAddress: request.headers.get('x-forwarded-for') ||
+        request.headers.get('x-real-ip') ||
+        'unknown',
+
       // Additional tracking
       timestamp: data.timestamp,
       formVersion: '1.0',
@@ -210,14 +210,14 @@ export async function POST(request) {
 
     // Check for duplicate email (optional - update existing or create new)
     const existingContact = await collection.findOne({ email: contactDocument.email });
-    
+
     let emailResult = { sent: false };
-    
+
     if (existingContact) {
       // Update existing contact with new information
       const updateResult = await collection.updateOne(
         { email: contactDocument.email },
-        { 
+        {
           $set: {
             ...contactDocument,
             updatedAt: new Date(),
@@ -257,9 +257,21 @@ export async function POST(request) {
 
   } catch (error) {
     console.error('Database error:', error);
-    
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+
+    // Return more detailed error in development
+    const isDevelopment = process.env.NODE_ENV === 'development';
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      {
+        error: 'Internal server error',
+        ...(isDevelopment && {
+          details: error.message,
+          errorType: error.name
+        })
+      },
       { status: 500 }
     );
   }
@@ -300,7 +312,7 @@ export async function GET(request) {
 
   } catch (error) {
     console.error('MongoDB error:', error);
-    
+
     return NextResponse.json(
       { error: 'Failed to retrieve contacts from MongoDB' },
       { status: 500 }

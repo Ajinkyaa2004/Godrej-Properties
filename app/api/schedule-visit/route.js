@@ -16,7 +16,7 @@ async function sendVisitConfirmationEmail(visitData) {
 
   try {
     const nodemailer = (await import('nodemailer')).default;
-    
+
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT || '587'),
@@ -29,7 +29,7 @@ async function sendVisitConfirmationEmail(visitData) {
 
     // Parse email from fullName or use a default contact method
     const recipientEmail = visitData.email || process.env.NOTIFICATION_EMAIL;
-    
+
     if (!recipientEmail) {
       console.log('⚠️ No recipient email available for visit confirmation');
       return { sent: false, reason: 'No recipient email' };
@@ -153,8 +153,8 @@ export async function POST(request) {
     // Check if MongoDB is configured
     if (!MONGODB_URI) {
       return NextResponse.json(
-        { 
-          error: 'MongoDB not configured', 
+        {
+          error: 'MongoDB not configured',
           message: 'Please create .env.local file with MONGODB_URI'
         },
         { status: 500 }
@@ -187,7 +187,7 @@ export async function POST(request) {
     const preferredDate = new Date(data.preferredDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     if (preferredDate < today) {
       return NextResponse.json(
         { error: 'Preferred date must be today or in the future' },
@@ -213,10 +213,10 @@ export async function POST(request) {
 
       // Metadata
       submittedAt: new Date(),
-      ipAddress: request.headers.get('x-forwarded-for') || 
-                 request.headers.get('x-real-ip') || 
-                 'unknown',
-      
+      ipAddress: request.headers.get('x-forwarded-for') ||
+        request.headers.get('x-real-ip') ||
+        'unknown',
+
       // Additional tracking
       timestamp: data.timestamp,
       formVersion: '1.0',
@@ -231,7 +231,7 @@ export async function POST(request) {
     // Check for duplicate visit request (same phone + same date)
     const existingVisit = await collection.findOne({
       $and: [
-        { 
+        {
           $or: [
             { phoneNumber: visitDocument.phoneNumber },
             { fullPhoneNumber: visitDocument.fullPhoneNumber }
@@ -240,7 +240,7 @@ export async function POST(request) {
         { preferredDate: visitDocument.preferredDate }
       ]
     });
-    
+
     if (existingVisit) {
       return NextResponse.json({
         success: false,
@@ -270,9 +270,21 @@ export async function POST(request) {
 
   } catch (error) {
     console.error('Schedule visit database error:', error);
-    
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+
+    // Return more detailed error in development
+    const isDevelopment = process.env.NODE_ENV === 'development';
+
     return NextResponse.json(
-      { error: 'Failed to schedule visit. Please try again.' },
+      {
+        error: 'Failed to schedule visit. Please try again.',
+        ...(isDevelopment && {
+          details: error.message,
+          errorType: error.name
+        })
+      },
       { status: 500 }
     );
   }
@@ -329,7 +341,7 @@ export async function GET(request) {
 
   } catch (error) {
     console.error('MongoDB error:', error);
-    
+
     return NextResponse.json(
       { error: 'Failed to retrieve visit requests from MongoDB' },
       { status: 500 }
