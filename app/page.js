@@ -962,6 +962,7 @@ export default function Home() {
                   { name: 'About', href: '#about', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
                   { name: 'Amenities', href: '#amenities', icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z' },
                   { name: 'Gallery', href: '/gallery', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
+                  { name: 'Blogs', href: '/blogs', icon: 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z' },
                   { name: 'Contact', href: '#contact', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', action: 'contact' },
                 ].map((item, index) => (
                   <div key={item.name} className="relative group">
@@ -1038,6 +1039,7 @@ export default function Home() {
               { name: 'About', href: '#about', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
               { name: 'Amenities', href: '#amenities', icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z' },
               { name: 'Gallery', href: '/gallery', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
+              { name: 'Blogs', href: '/blogs', icon: 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z' },
               { name: 'Contact', href: '#contact', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', action: 'contact' },
             ].map((item) => (
               <a
@@ -1075,7 +1077,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ---------------- HERO ---------------- */}
+      {/* ---------------- PREMIUM LUXURY HERO ---------------- */}
       <section
         id="home"
         className="relative h-[100vh] flex items-center justify-center overflow-hidden"
@@ -1087,7 +1089,7 @@ export default function Home() {
             src="/hero.png"
             alt="Godrej Reserve Luxury Apartments Kandivali East Mumbai - Premium 3 BHK and 4 BHK Residential Complex with Modern Architecture"
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-[20s] hover:scale-105"
             style={{ objectPosition: 'center 20%' }}
             priority
             quality={90}
@@ -1095,8 +1097,21 @@ export default function Home() {
             blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkbHB0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
           />
         </div>
-        {/* Animated Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/70" />
+
+        {/* Premium Multi-layered Gradient Overlays */}
+        <div className="absolute inset-0 overlay-luxury-gradient" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+
+        {/* Floating Particles - Premium Effect */}
+        <div className="floating-particles">
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+        </div>
 
         {/* EOI Premium Box - Desktop Version (Hidden on Mobile) */}
         <div className="hidden md:block absolute bottom-24 right-0 z-20 animate-fade-in animate-bounce-slow" style={{ animationDelay: '1.5s', animationFillMode: 'both' }}>
@@ -1203,8 +1218,8 @@ export default function Home() {
           {/* Dropdown Content */}
           <div
             className={`absolute right-0 top-0 transition-all duration-500 ease-out ${eoiDropdownOpen
-                ? 'translate-x-0 opacity-100'
-                : 'translate-x-full opacity-0 pointer-events-none'
+              ? 'translate-x-0 opacity-100'
+              : 'translate-x-full opacity-0 pointer-events-none'
               }`}
           >
             <div className="relative group mr-2">
@@ -1298,81 +1313,84 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Decorative Elements */}
-        <div className="absolute top-1/4 left-1/4 w-3 h-3 rounded-full bg-amber-400/80 animate-float" />
-        <div className="absolute top-1/3 right-1/4 w-2 h-2 rounded-full bg-white/60 animate-float animation-delay-2000" />
-        <div className="absolute bottom-1/4 right-1/3 w-4 h-4 rounded-full bg-amber-300/50 animate-float animation-delay-1000" />
+        {/* Premium Decorative Elements with Enhanced Animation */}
+        <div className="absolute top-1/4 left-1/4 w-4 h-4 rounded-full bg-amber-400/90 shadow-luxury-md" style={{ animation: 'floatParticle 12s infinite' }} />
+        <div className="absolute top-1/3 right-1/4 w-3 h-3 rounded-full bg-white/70 shadow-luxury-sm" style={{ animation: 'floatParticle 15s infinite 2s' }} />
+        <div className="absolute bottom-1/4 right-1/3 w-5 h-5 rounded-full bg-amber-300/60 shadow-luxury-md" style={{ animation: 'floatParticle 18s infinite 4s' }} />
 
-        {/* Main Content */}
+        {/* Main Content - Enhanced with Premium Typography */}
         <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
-          {/* Pre-heading */}
-          <div className="mb-4">
-            <span className="inline-block px-4 py-1 text-xs font-medium tracking-wider text-amber-300 bg-amber-900/30 backdrop-blur-sm rounded-full border border-amber-500/20">
+          {/* Pre-heading with Premium Badge */}
+          <div className="mb-6 fade-slide-up">
+            <span className="inline-flex items-center gap-2 px-6 py-2 text-xs font-bold tracking-widest text-amber-200 glass-premium rounded-full border border-amber-400/30 shadow-luxury-md">
+              <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></span>
               PREMIUM LIFESTYLE RESIDENCE
+              <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></span>
             </span>
           </div>
 
-          {/* Main Heading */}
-          <h1 className="text-white text-5xl md:text-7xl lg:text-8xl font-heading leading-tight mb-6">
-            <span className="block mb-2 text-amber-300 text-3xl md:text-4xl font-light tracking-widest">WELCOME TO</span>
-            <span className="relative inline-block">
+          {/* Main Heading with Luxury Typography */}
+          <h1 className="text-white text-5xl md:text-7xl lg:text-8xl leading-tight mb-6 text-reveal-luxury text-luxury-shadow" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <span className="block mb-3 text-amber-200 text-3xl md:text-4xl font-light tracking-[0.3em]">WELCOME TO</span>
+            <span className="relative inline-block luxury-text-gradient">
               <span className="relative z-10">Godrej Reserve</span>
-              <span className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-amber-400 to-amber-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></span>
+              <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
             </span>
           </h1>
 
-          {/* Subheading */}
-          <div className="relative max-w-2xl mx-auto">
+          {/* Subheading with Enhanced Styling */}
+          <div className="relative max-w-2xl mx-auto fade-slide-up" style={{ animationDelay: '0.3s' }}>
             <p className="text-gray-100 text-lg md:text-xl leading-relaxed font-light mb-8">
-              Discover <span className="font-bold text-white">unparalleled elegance</span> at Godrej Reserve, where modern design meets timeless luxury in the heart of Kandivali East.
+              Discover <span className="font-bold text-white underline-elegant">unparalleled elegance</span> at Godrej Reserve, where modern design meets timeless luxury in the heart of Kandivali East.
             </p>
 
-            {/* Divider */}
-            <div className="w-24 h-px bg-gradient-to-r from-transparent via-amber-400/50 to-transparent mx-auto my-8"></div>
+            {/* Premium Divider */}
+            <div className="divider-luxury mx-auto my-8"></div>
 
-            {/* Amenities Badges */}
+            {/* Amenities Badges with Enhanced Styling */}
             <div className="flex flex-wrap justify-center gap-3 mb-8">
               {['Luxury Residences', 'Premium Amenities', 'Green Spaces', '24/7 Security'].map((item, index) => (
-                <span key={index} className="px-4 py-2 text-xs font-medium text-amber-100 bg-white/5 backdrop-blur-sm rounded-full border border-white/10 hover:bg-white/10 transition-all duration-300">
+                <span key={index} className="px-5 py-2.5 text-xs font-semibold text-amber-100 glass-premium rounded-full border border-white/20 hover:bg-white/15 hover:scale-105 transition-all duration-300 shadow-luxury-sm hover:shadow-luxury-md cursor-pointer">
                   {item}
                 </span>
               ))}
             </div>
           </div>
 
-          {/* CTA Button */}
-          <div className="relative group">
+          {/* Premium CTA Button */}
+          <div className="relative group fade-slide-up" style={{ animationDelay: '0.6s' }}>
             <button
               onClick={() => setShowScheduleVisitForm(true)}
-              className="relative inline-flex items-center px-8 py-4 overflow-hidden text-sm font-medium text-white transition-all duration-500 rounded-lg group bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 cursor-pointer"
+              className="luxury-button relative inline-flex items-center px-10 py-5 overflow-hidden text-base font-bold text-white transition-all duration-500 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 cursor-pointer shadow-luxury-md hover:shadow-luxury-lg border-2 border-amber-500/30"
             >
               <span className="relative z-10 flex items-center">
                 <span className="mr-3">Schedule a Private Tour</span>
-                <svg className="w-4 h-4 transition-transform duration-300 transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                <svg className="w-5 h-5 transition-transform duration-300 transform group-hover:translate-x-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </span>
-              <span className="absolute inset-0 bg-gradient-to-r from-amber-500/30 to-amber-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
             </button>
 
-            <p className="mt-4 text-sm text-gray-300 opacity-0 animate-fade-in" style={{ "animationFillMode": "forwards", "animationDelay": "1s" }}>
-              Limited availability. Book your exclusive viewing today.
+            <p className="mt-5 text-sm text-amber-100 opacity-0 animate-fade-in font-medium tracking-wide" style={{ "animationFillMode": "forwards", "animationDelay": "1.2s" }}>
+              ✨ Limited availability. Book your exclusive viewing today.
             </p>
           </div>
 
-          {/* Scroll Indicator */}
-          <div className="absolute -bottom-14 left-1/2 transform -translate-x-1/2">
-            <div className="flex flex-col items-center space-y-1">
-              <span className="text-xs text-amber-200/70 tracking-widest">EXPLORE</span>
-              <div className="w-6 h-10 border-2 border-amber-300/50 rounded-full flex justify-center p-1">
-                <div className="w-1 h-2 bg-amber-300 rounded-full animate-bounce"></div>
+          {/* Premium Scroll Indicator */}
+          <div className="absolute -bottom-14 left-1/2 transform -translate-x-1/2 fade-slide-up" style={{ animationDelay: '0.9s' }}>
+            <div className="flex flex-col items-center space-y-2">
+              <span className="text-xs text-amber-200/80 tracking-[0.3em] font-semibold">EXPLORE</span>
+              <div className="w-7 h-11 border-2 border-amber-300/60 rounded-full flex justify-center p-1.5 shadow-luxury-sm">
+                <div className="w-1.5 h-3 bg-amber-300 rounded-full" style={{ animation: 'bounce 2s infinite' }}></div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Animated Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+        {/* Final Premium Overlay for Depth */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          background: 'radial-gradient(circle at 50% 50%, transparent 0%, rgba(0,0,0,0.3) 100%)'
+        }} />
       </section>
 
       {/* ---------------- RESIDENCE CONFIGURATIONS ---------------- */}
