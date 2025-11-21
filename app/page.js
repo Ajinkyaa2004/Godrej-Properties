@@ -714,7 +714,7 @@ export default function Home() {
       return 'World-class amenities include: Infinity Pool 🏊, State-of-the-Art Gym 🏋️, Clubhouse, Landscaped Gardens 🌳, Children\'s Play Area, 24/7 Security, Concierge Services, and much more!';
     }
     if (lowerMsg.includes('configuration') || lowerMsg.includes('bhk') || lowerMsg.includes('flat')) {
-      return 'We offer premium configurations:\n• 3 BHK - 1100 sq.ft (₹3.75 Cr*)\n• 3 BHK - 1330+ sq.ft (₹5.15 Cr*)\n• 3 BHK - 1450+ sq.ft (₹5.85 Cr*)\n• 4 BHK - 2000+ sq.ft (₹8.50 Cr*)';
+      return 'We offer premium configurations:\n• 3 BHK - 1100 sq.ft (₹4.50 Cr*)\n• 3.5 BHK - 1330+ sq.ft (₹5.15 Cr*)\n• 3 BHK - 1450+ sq.ft (₹5.75 Cr*)\n• 4 BHK - 2000+ sq.ft (₹8.50 Cr*)';
     }
 
     // Pricing
