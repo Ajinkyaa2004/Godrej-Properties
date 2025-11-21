@@ -66,7 +66,7 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
       const selectedDate = new Date(formData.preferredDate);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      
+
       if (selectedDate < today) {
         newErrors.preferredDate = 'Please select a future date';
       }
@@ -93,7 +93,7 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (e, isRetry = false) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -103,7 +103,7 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
 
     try {
       const hiddenFields = captureHiddenFields();
-      
+
       const submitData = {
         ...formData,
         fullPhoneNumber: `${formData.countryCode}${formData.phoneNumber}`,
@@ -120,19 +120,19 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        
+
         if (response.status === 409) {
           throw new Error('A visit is already scheduled for this date. Please choose a different date.');
         }
-        
+
         throw new Error(errorData.error || `Server error: ${response.status}`);
       }
 
       const result = await response.json();
-      
+
       setSubmitSuccess(true);
       setRetryCount(0);
-      
+
       setTimeout(() => {
         setSubmitSuccess(false);
         onClose();
@@ -147,9 +147,9 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
       }, 3000);
     } catch (error) {
       console.error('Schedule visit submission error:', error);
-      
+
       let errorMessage = 'An unexpected error occurred. ';
-      
+
       if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
         errorMessage = 'Network connection issue. Please check your internet connection. ';
       } else if (error.message.includes('500')) {
@@ -161,12 +161,12 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
       } else if (error.message) {
         errorMessage = error.message + ' ';
       }
-      
-      setErrors({ 
+
+      setErrors({
         submit: errorMessage,
         canRetry: retryCount < MAX_RETRIES && !error.message.includes('400') && !error.message.includes('already scheduled')
       });
-      
+
       if (!isRetry) {
         setRetryCount(prev => prev + 1);
       }
@@ -183,7 +183,7 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
   const handleInputChange = (field, value) => {
     setFormData(prev => {
       const newData = { ...prev, [field]: value };
-      
+
       // Auto-sync country code when country changes
       if (field === 'country') {
         const selectedCountry = countries.find(c => c.name === value);
@@ -191,10 +191,10 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
           newData.countryCode = selectedCountry.code;
         }
       }
-      
+
       return newData;
     });
-    
+
     // Clear error for this field when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
@@ -211,7 +211,7 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={onClose}>
-      <div className="relative w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl animate-scaleIn" onClick={(e) => e.stopPropagation()}>
+      <div className="relative w-[90%] max-w-md bg-white rounded-2xl shadow-2xl animate-scaleIn" onClick={(e) => e.stopPropagation()}>
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -267,9 +267,8 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
                 type="text"
                 value={formData.fullName}
                 onChange={(e) => handleInputChange('fullName', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${
-                  errors.fullName ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${errors.fullName ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="Enter your full name"
               />
               {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
@@ -296,9 +295,8 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
                   type="tel"
                   value={formData.phoneNumber}
                   onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-                  className={`flex-1 px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${
-                    errors.phoneNumber ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`flex-1 px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${errors.phoneNumber ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   placeholder="9876543210"
                 />
               </div>
@@ -315,9 +313,8 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
                 value={formData.preferredDate}
                 onChange={(e) => handleInputChange('preferredDate', e.target.value)}
                 min={getTodayDate()}
-                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${
-                  errors.preferredDate ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${errors.preferredDate ? 'border-red-300' : 'border-gray-300'
+                  }`}
               />
               {errors.preferredDate && <p className="text-red-500 text-xs mt-1">{errors.preferredDate}</p>}
             </div>
@@ -330,9 +327,8 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
               <select
                 value={formData.country}
                 onChange={(e) => handleInputChange('country', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${
-                  errors.country ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${errors.country ? 'border-red-300' : 'border-gray-300'
+                  }`}
               >
                 {countries.map((country) => (
                   <option key={country.name} value={country.name}>

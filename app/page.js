@@ -2390,7 +2390,7 @@ export default function Home() {
                   Floor Plans
                 </h3>
                 <p className="text-gray-600 text-sm mb-4">
-                  Discover elegant 2, 3 and 4 BHK layouts crafted for premium living with smart space planning.
+                  Discover elegant 3, 3.5 and 4 BHK layouts crafted for premium living with smart space planning.
                 </p>
                 <div className="flex flex-wrap gap-2 text-xs font-medium">
                   <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">2 BHK</span>

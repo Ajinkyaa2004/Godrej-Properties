@@ -23,7 +23,7 @@ const countries = [
 
 const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
   console.log('ContactForm rendered with isOpen:', isOpen);
-  
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -93,7 +93,7 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
   const captureHiddenFields = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const utmParams = {};
-    
+
     // Capture UTM parameters
     ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'].forEach(param => {
       if (urlParams.get(param)) {
@@ -121,7 +121,7 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
 
   const handleSubmit = async (e, isRetry = false) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -148,19 +148,19 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
       }
 
       const checkResult = await checkResponse.json();
-      
+
       if (checkResult.exists) {
         // Show "already processed" message
-        setErrors({ 
-          submit: `Your details have already been processed on ${new Date(checkResult.submittedAt).toLocaleDateString()}. Thank you for your interest!` 
+        setErrors({
+          submit: `Your details have already been processed on ${new Date(checkResult.submittedAt).toLocaleDateString()}. Thank you for your interest!`
         });
         setIsSubmitting(false);
-        
+
         // Mark as submitted to prevent form showing again
         if (markAsSubmitted) {
           markAsSubmitted();
         }
-        
+
         // Close form after showing message
         setTimeout(() => {
           onClose();
@@ -170,7 +170,7 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
 
       // Proceed with submission if user doesn't exist
       const hiddenFields = captureHiddenFields();
-      
+
       const submitData = {
         ...formData,
         fullPhoneNumber: `${formData.countryCode}${formData.phoneNumber}`,
@@ -191,15 +191,15 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
       }
 
       const result = await response.json();
-      
+
       // Mark as submitted immediately to prevent showing again
       if (markAsSubmitted) {
         markAsSubmitted();
       }
-      
+
       setSubmitSuccess(true);
       setRetryCount(0);
-      
+
       setTimeout(() => {
         setSubmitSuccess(false);
         onClose();
@@ -215,9 +215,9 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
       }, 2000);
     } catch (error) {
       console.error('Form submission error:', error);
-      
+
       let errorMessage = 'An unexpected error occurred. ';
-      
+
       if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
         errorMessage = 'Network connection issue. Please check your internet connection. ';
       } else if (error.message.includes('500')) {
@@ -227,12 +227,12 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
       } else if (error.message) {
         errorMessage = error.message + ' ';
       }
-      
-      setErrors({ 
+
+      setErrors({
         submit: errorMessage,
         canRetry: retryCount < MAX_RETRIES && !error.message.includes('400')
       });
-      
+
       if (!isRetry) {
         setRetryCount(prev => prev + 1);
       }
@@ -249,7 +249,7 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
   const handleInputChange = (field, value) => {
     setFormData(prev => {
       const newData = { ...prev, [field]: value };
-      
+
       // Auto-sync country code when country changes
       if (field === 'country') {
         const selectedCountry = countries.find(c => c.name === value);
@@ -257,10 +257,10 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
           newData.countryCode = selectedCountry.code;
         }
       }
-      
+
       return newData;
     });
-    
+
     // Clear error for this field when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
@@ -271,7 +271,7 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={onClose}>
-      <div className="relative w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl animate-scaleIn" onClick={(e) => e.stopPropagation()}>
+      <div className="relative w-[90%] max-w-md bg-white rounded-2xl shadow-2xl animate-scaleIn" onClick={(e) => e.stopPropagation()}>
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -321,14 +321,13 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
                   type="text"
                   value={formData.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${
-                    errors.firstName ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${errors.firstName ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   placeholder="John"
                 />
                 {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Last Name *
@@ -337,9 +336,8 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
                   type="text"
                   value={formData.lastName}
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${
-                    errors.lastName ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${errors.lastName ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   placeholder="Doe"
                 />
                 {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
@@ -367,9 +365,8 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
                   type="tel"
                   value={formData.phoneNumber}
                   onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-                  className={`flex-1 px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${
-                    errors.phoneNumber ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`flex-1 px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${errors.phoneNumber ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   placeholder="9876543210"
                 />
               </div>
@@ -385,9 +382,8 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${
-                  errors.email ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${errors.email ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="john.doe@example.com"
               />
               {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
@@ -401,9 +397,8 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
               <select
                 value={formData.country}
                 onChange={(e) => handleInputChange('country', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${
-                  errors.country ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 ${errors.country ? 'border-red-300' : 'border-gray-300'
+                  }`}
               >
                 {countries.map((country) => (
                   <option key={country.name} value={country.name}>
@@ -431,11 +426,10 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
             </button>
 
             {errors.submit && (
-              <div className={`text-sm text-center mt-2 p-3 rounded-lg ${
-                errors.submit.includes('already been processed') 
-                  ? 'bg-amber-50 text-amber-700 border border-amber-200' 
+              <div className={`text-sm text-center mt-2 p-3 rounded-lg ${errors.submit.includes('already been processed')
+                  ? 'bg-amber-50 text-amber-700 border border-amber-200'
                   : 'bg-red-50 text-red-700 border border-red-200'
-              }`}>
+                }`}>
                 <p>{errors.submit}</p>
                 {errors.canRetry && (
                   <button
