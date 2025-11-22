@@ -1012,11 +1012,11 @@ export default function Home() {
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="lg:hidden p-2 rounded-lg text-gray-700 hover:bg-[#EFE9E3] focus:outline-none focus:ring-2 focus:ring-[#a67d4b]/50 transition-colors z-50"
+                className="lg:hidden p-1.5 rounded-lg text-gray-700 hover:bg-[#EFE9E3] focus:outline-none focus:ring-2 focus:ring-[#a67d4b]/50 transition-colors z-50"
                 aria-label="Toggle menu"
               >
                 {menuOpen ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 ) : (
@@ -1031,48 +1031,63 @@ export default function Home() {
       </header>
 
       {/* Mobile Menu */}
-      <div className={`lg:hidden fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 ${menuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-        <div className={`absolute top-20 left-0 right-0 bg-white shadow-xl transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-y-0' : '-translate-y-full'}`}>
-          <div className="px-6 py-4 space-y-4">
+      <div className={`lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300 ${menuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`absolute top-20 left-0 right-0 bg-white/95 backdrop-blur-xl shadow-2xl transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-y-0' : '-translate-y-full'} rounded-b-3xl border-b border-white/20`}>
+          <div className="px-6 py-4 space-y-1">
             {[
               { name: 'Home', href: '#home', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
               { name: 'About', href: '#about', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
               { name: 'Amenities', href: '#amenities', icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z' },
               { name: 'Gallery', href: '/gallery', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
               { name: 'Blogs', href: '/blogs', icon: 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z' },
-              { name: 'Contact', href: '#contact', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', action: 'contact' },
             ].map((item) => (
               <a
                 key={item.name}
                 href={item.href}
-                className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-[#EFE9E3] rounded-lg group transition-colors"
+                className="flex items-center px-4 py-2.5 text-sm font-medium text-gray-800 hover:bg-amber-50 hover:text-amber-800 rounded-xl group transition-all duration-300"
                 onClick={(e) => {
                   if (item.name === 'Gallery') {
                     handleGalleryClick(e);
-                  } else if (item.action === 'contact') {
-                    e.preventDefault();
-                    setMenuOpen(false);
-                    const footer = document.querySelector('footer');
-                    footer?.scrollIntoView({ behavior: 'smooth' });
-                    setTimeout(() => setShowContactForm(true), 800);
                   } else {
                     setMenuOpen(false);
                   }
                 }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3 text-[#a67d4b] opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
-                </svg>
+                <div className="p-1.5 rounded-lg bg-gray-50 group-hover:bg-amber-100/50 mr-3 transition-colors duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-amber-600 group-hover:text-amber-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
+                  </svg>
+                </div>
                 {item.name}
               </a>
             ))}
-            <a
-              href="#booking"
-              className="block w-full mt-4 px-6 py-3 text-center bg-gradient-to-r from-[#a67d4b] to-[#ad9989] text-white font-medium rounded-lg shadow hover:shadow-md transition-all duration-300"
-              onClick={() => setMenuOpen(false)}
-            >
-              Book Site Visit
-            </a>
+
+            <div className="pt-2 space-y-2">
+              <a
+                href="#contact"
+                className="flex items-center justify-center w-full px-6 py-2.5 text-sm text-center bg-[#F3EFEA] text-amber-900 font-semibold rounded-xl hover:bg-[#E8E2DB] transition-all duration-300 border border-[#E8E2DB]"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMenuOpen(false);
+                  const footer = document.querySelector('footer');
+                  footer?.scrollIntoView({ behavior: 'smooth' });
+                  setTimeout(() => setShowContactForm(true), 800);
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-amber-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Contact
+              </a>
+
+              <a
+                href="#booking"
+                className="flex items-center justify-center w-full px-6 py-2.5 text-sm text-center bg-gradient-to-r from-amber-600 to-amber-700 text-white font-semibold rounded-xl shadow-lg shadow-amber-600/20 hover:shadow-amber-600/30 hover:from-amber-700 hover:to-amber-800 transition-all duration-300 transform hover:-translate-y-0.5"
+                onClick={() => setMenuOpen(false)}
+              >
+                Book Site Visit
+              </a>
+            </div>
           </div>
         </div>
       </div>
