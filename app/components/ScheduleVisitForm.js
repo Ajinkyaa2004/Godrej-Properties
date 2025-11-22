@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Cormorant_Garamond } from 'next/font/google';
+import { trackEvent, trackConversion } from '../utils/analytics';
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -129,6 +130,13 @@ const ScheduleVisitForm = ({ isOpen, onClose }) => {
       }
 
       const result = await response.json();
+
+      // Track Conversion in GA4
+      trackConversion('form', 'Schedule Visit Form');
+      trackEvent('form_submit', {
+        form_name: 'Schedule Visit Form',
+        page_location: window.location.href
+      });
 
       setSubmitSuccess(true);
       setRetryCount(0);

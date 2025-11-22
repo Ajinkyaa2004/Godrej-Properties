@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { trackEvent, trackConversion, GA_EVENTS, GA_CATEGORIES } from '../utils/analytics';
 
 const Footer = ({ handleGalleryClick, setShowScheduleVisitForm }) => {
   const [email, setEmail] = useState('');
@@ -76,21 +77,21 @@ const Footer = ({ handleGalleryClick, setShowScheduleVisitForm }) => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 py-16">
-          
+
           {/* Column 1: Brand & Description - 4 columns */}
           <div className="lg:col-span-4 space-y-6">
             <div className="group flex justify-center md:justify-start">
-              <Image 
-                src="/Layer 5.png" 
-                alt="Godrej Reserve Logo" 
+              <Image
+                src="/Layer 5.png"
+                alt="Godrej Reserve Logo"
                 width={240}
                 height={60}
                 className="object-contain md:-ml-12 brightness-200 group-hover:scale-105 transition-transform duration-300"
               />
             </div>
-            
+
             <p className="text-gray-300 text-sm leading-relaxed pr-4">
-              Experience unparalleled luxury living at Godrej Reserve, Kandivali East. 
+              Experience unparalleled luxury living at Godrej Reserve, Kandivali East.
               Where elegance meets comfort in Mumbai's most prestigious address.
             </p>
 
@@ -102,7 +103,7 @@ const Footer = ({ handleGalleryClick, setShowScheduleVisitForm }) => {
                 </svg>
                 <p className="text-amber-400 font-semibold text-sm leading-none">MahaRERA Approved</p>
               </div>
-              
+
               {/* RERA Barcodes Grid */}
               <div className="space-y-3">
                 {[
@@ -112,7 +113,7 @@ const Footer = ({ handleGalleryClick, setShowScheduleVisitForm }) => {
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-center gap-3 bg-white/5 rounded-lg p-2.5">
                     <div className="bg-white rounded p-1 flex-shrink-0">
-                      <Image 
+                      <Image
                         src={`/${item.barcode}`}
                         alt={`${item.wing} Barcode`}
                         width={100}
@@ -234,6 +235,10 @@ const Footer = ({ handleGalleryClick, setShowScheduleVisitForm }) => {
                   href="https://www.godrejproperties.com/digitalcollateral/mumbai/reserve/pdf/Reserve_opp-doc-v2.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackEvent(GA_EVENTS.DOWNLOAD, {
+                    event_category: GA_CATEGORIES.CONVERSION,
+                    event_label: 'Footer Brochure'
+                  })}
                   className="text-gray-300 hover:text-amber-400 transition-colors duration-300 flex items-center gap-2 group text-sm"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500/50 group-hover:bg-amber-400 transition-colors"></span>
@@ -258,7 +263,7 @@ const Footer = ({ handleGalleryClick, setShowScheduleVisitForm }) => {
               <span className="w-1 h-6 bg-amber-500 rounded-full"></span>
               Get In Touch
             </h3>
-            
+
             <div className="space-y-4 mb-6">
               {/* Address */}
               <div className="flex items-start gap-3 group">
@@ -283,7 +288,13 @@ const Footer = ({ handleGalleryClick, setShowScheduleVisitForm }) => {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Call Us</p>
-                  <a href="tel:+919876543210" className="text-sm text-gray-300 hover:text-amber-400 transition-colors">+91 8879006523</a>
+                  <a
+                    href="tel:+919876543210"
+                    onClick={() => trackConversion('call', 'Footer Phone')}
+                    className="text-sm text-gray-300 hover:text-amber-400 transition-colors"
+                  >
+                    +91 8879006523
+                  </a>
                 </div>
               </div>
 
@@ -296,7 +307,16 @@ const Footer = ({ handleGalleryClick, setShowScheduleVisitForm }) => {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Email</p>
-                  <a href="mailto:info@godrejreserve.com" className="text-sm text-gray-300 hover:text-amber-400 transition-colors">info@godrejreserve.com</a>
+                  <a
+                    href="mailto:info@godrejreserve.com"
+                    onClick={() => trackEvent(GA_EVENTS.CONTACT_CLICK, {
+                      event_category: GA_CATEGORIES.CONVERSION,
+                      event_label: 'Footer Email'
+                    })}
+                    className="text-sm text-gray-300 hover:text-amber-400 transition-colors"
+                  >
+                    godrejreserve.org.in@gmail.com
+                  </a>
                 </div>
               </div>
             </div>

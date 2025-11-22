@@ -8,6 +8,7 @@ import { Cormorant_Garamond } from 'next/font/google';
 import ContactForm from './components/ContactForm';
 import ScheduleVisitForm from './components/ScheduleVisitForm';
 import Footer from './components/Footer';
+import { trackEvent, trackConversion, GA_EVENTS, GA_CATEGORIES } from './utils/analytics';
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -694,8 +695,35 @@ export default function Home() {
     const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
     revealElements.forEach(el => observer.observe(el));
 
+    // Scroll Depth Tracking
+    let maxScroll = 0;
+    const handleScroll = () => {
+      const scrollPercent = Math.round((window.scrollY + window.innerHeight) / document.body.scrollHeight * 100);
+
+      if (scrollPercent > maxScroll) {
+        maxScroll = scrollPercent;
+
+        // Track specific milestones
+        [25, 50, 75, 90].forEach(milestone => {
+          if (maxScroll >= milestone && maxScroll - scrollPercent < 5) { // Avoid duplicate events
+            // Check if we already tracked this milestone in this session (simplified)
+            if (!window[`tracked_scroll_${milestone}`]) {
+              trackEvent(GA_EVENTS.SCROLL_DEPTH, {
+                event_category: GA_CATEGORIES.ENGAGEMENT,
+                depth: milestone
+              });
+              window[`tracked_scroll_${milestone}`] = true;
+            }
+          }
+        });
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
     return () => {
       observer.disconnect();
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -995,7 +1023,13 @@ export default function Home() {
                 {/* CTA Button - Optimized */}
                 <div className="ml-4 relative group">
                   <button
-                    onClick={() => setShowScheduleVisitForm(true)}
+                    onClick={() => {
+                      trackEvent(GA_EVENTS.BUTTON_CLICK, {
+                        event_category: GA_CATEGORIES.NAVIGATION,
+                        event_label: 'Navbar Schedule Visit'
+                      });
+                      setShowScheduleVisitForm(true);
+                    }}
                     className="relative px-6 py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white text-sm font-medium rounded-lg overflow-hidden group-hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300 transform group-hover:-translate-y-0.5 flex items-center border border-white/20 hover:border-white/30 whitespace-nowrap"
                   >
                     <span className="relative z-10 flex items-center">
@@ -1375,7 +1409,13 @@ export default function Home() {
           {/* Premium CTA Button */}
           <div className="relative group fade-slide-up" style={{ animationDelay: '0.6s' }}>
             <button
-              onClick={() => setShowScheduleVisitForm(true)}
+              onClick={() => {
+                trackEvent(GA_EVENTS.BUTTON_CLICK, {
+                  event_category: GA_CATEGORIES.CONVERSION,
+                  event_label: 'Hero Schedule Tour'
+                });
+                setShowScheduleVisitForm(true);
+              }}
               className="luxury-button relative inline-flex items-center px-10 py-5 overflow-hidden text-base font-bold text-white transition-all duration-500 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 cursor-pointer shadow-luxury-md hover:shadow-luxury-lg border-2 border-amber-500/30"
             >
               <span className="relative z-10 flex items-center">
