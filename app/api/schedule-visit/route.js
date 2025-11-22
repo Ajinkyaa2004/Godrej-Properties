@@ -78,7 +78,7 @@ async function sendVisitConfirmationEmail(visitData) {
                 </ul>
               </div>
               
-              <p>Our property consultant will contact you at <strong>${visitData.fullPhoneNumber}</strong> within 24 hours to confirm the exact time and provide you with:</p>
+              <p>Our team member will reach out to you soon at <strong>${visitData.fullPhoneNumber}</strong> to confirm the exact time and provide you with:</p>
               <ul>
                 <li>Detailed visit schedule</li>
                 <li>Location and directions</li>

@@ -61,7 +61,7 @@ async function sendConfirmationEmail(contactData) {
                 <li><strong>Country:</strong> ${contactData.country}</li>
               </ul>
               
-              <p>Our property consultant will reach out to you within 24 hours with comprehensive details about the property, pricing, and available units.</p>
+              <p>Our team member will reach out to you soon with comprehensive details about the property, pricing, and available units.</p>
               
               <p style="text-align: center;">
                 <a href="${contactData.sourcePage || 'https://godrejreserve.com'}" class="button">Visit Our Website</a>
