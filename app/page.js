@@ -1922,7 +1922,6 @@ export default function Home() {
                   <div className="mb-6">
                     <ul className="space-y-3 text-gray-600">
                       {[
-                        'Infinity Pool with Skyline Views',
                         'State-of-the-Art Fitness Center',
                         'Exclusive Residents Lounge',
                         'Landscaped Gardens',
@@ -2393,8 +2392,8 @@ export default function Home() {
                   Discover elegant 3, 3.5 and 4 BHK layouts crafted for premium living with smart space planning.
                 </p>
                 <div className="flex flex-wrap gap-2 text-xs font-medium">
-                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">2 BHK</span>
                   <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">3 BHK</span>
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">3.5 BHK</span>
                   <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">4 BHK</span>
                   <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">Luxury Duplex</span>
                 </div>
