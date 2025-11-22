@@ -86,10 +86,15 @@ export const metadata = {
   },
 };
 
+import SiteProtection from "./components/SiteProtection";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en-IN" className={inter.variable}>
-      <body className="min-h-screen bg-white">{children}</body>
+      <body className="min-h-screen bg-white">
+        <SiteProtection />
+        {children}
+      </body>
     </html>
   );
 }

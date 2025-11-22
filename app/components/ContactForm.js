@@ -130,45 +130,7 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
     setErrors(prev => ({ ...prev, submit: '' }));
 
     try {
-      // First check if user already exists in database
-      const checkResponse = await fetch('/api/contact/check', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          phoneNumber: formData.phoneNumber,
-          ipAddress: window.location.href
-        }),
-      });
-
-      if (!checkResponse.ok) {
-        throw new Error(`Server error: ${checkResponse.status}`);
-      }
-
-      const checkResult = await checkResponse.json();
-
-      if (checkResult.exists) {
-        // Show "already processed" message
-        setErrors({
-          submit: `Your details have already been processed on ${new Date(checkResult.submittedAt).toLocaleDateString()}. Thank you for your interest!`
-        });
-        setIsSubmitting(false);
-
-        // Mark as submitted to prevent form showing again
-        if (markAsSubmitted) {
-          markAsSubmitted();
-        }
-
-        // Close form after showing message
-        setTimeout(() => {
-          onClose();
-        }, 3000);
-        return;
-      }
-
-      // Proceed with submission if user doesn't exist
+      // Proceed with submission directly (backend handles duplicates)
       const hiddenFields = captureHiddenFields();
 
       const submitData = {
@@ -427,8 +389,8 @@ const ContactForm = ({ isOpen, onClose, markAsSubmitted }) => {
 
             {errors.submit && (
               <div className={`text-sm text-center mt-2 p-3 rounded-lg ${errors.submit.includes('already been processed')
-                  ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                  : 'bg-red-50 text-red-700 border border-red-200'
+                ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                : 'bg-red-50 text-red-700 border border-red-200'
                 }`}>
                 <p>{errors.submit}</p>
                 {errors.canRetry && (
