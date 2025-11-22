@@ -87,11 +87,13 @@ export const metadata = {
 };
 
 import SiteProtection from "./components/SiteProtection";
+import GoogleAnalytics from "./components/GoogleAnalytics";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en-IN" className={inter.variable}>
       <body className="min-h-screen bg-white">
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         <SiteProtection />
         {children}
       </body>
