@@ -2,13 +2,15 @@
 
 import Script from 'next/script';
 
-export default function GoogleAnalytics({ gaId }) {
-    if (!gaId) return null;
+export default function GoogleAnalytics({ gaId, gtId }) {
+    if (!gaId && !gtId) return null;
+
+    const primaryId = gaId || gtId;
 
     return (
         <>
             <Script
-                src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+                src={`https://www.googletagmanager.com/gtag/js?id=${primaryId}`}
                 strategy="afterInteractive"
             />
             <Script id="google-analytics" strategy="afterInteractive">
@@ -17,7 +19,8 @@ export default function GoogleAnalytics({ gaId }) {
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
 
-          gtag('config', '${gaId}');
+          ${gaId ? `gtag('config', '${gaId}');` : ''}
+          ${gtId ? `gtag('config', '${gtId}');` : ''}
         `}
             </Script>
         </>

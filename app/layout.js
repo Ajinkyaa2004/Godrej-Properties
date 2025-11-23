@@ -93,7 +93,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en-IN" className={inter.variable}>
       <body className="min-h-screen bg-white">
-        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        <GoogleAnalytics
+          gaId={process.env.NEXT_PUBLIC_GA_ID}
+          gtId={process.env.NEXT_PUBLIC_GOOGLE_TAG_ID}
+        />
         <SiteProtection />
         {children}
       </body>
