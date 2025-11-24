@@ -563,6 +563,21 @@ export default function Home() {
             "item": "https://godrejreserve.com/gallery"
           }
         ]
+      },
+      {
+        "@type": "VideoObject",
+        "name": "Godrej Reserve Property Walkthrough",
+        "description": "Immersive video tour of Godrej Reserve apartments and amenities in Kandivali East.",
+        "thumbnailUrl": "https://godrejreserve.com/hero.png",
+        "uploadDate": "2024-01-01T08:00:00+08:00",
+        "duration": "PT1M30S",
+        "contentUrl": "https://godrejreserve.com/videos/IMG_2616_2.mp4",
+        "embedUrl": "https://godrejreserve.com/videos/IMG_2616_2.mp4",
+        "interactionStatistic": {
+          "@type": "InteractionCounter",
+          "interactionType": { "@type": "WatchAction" },
+          "userInteractionCount": 5643
+        }
       }
     ]
   };
