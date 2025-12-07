@@ -88,6 +88,94 @@ const blogData = {
         ],
         tags: ['Luxury Living', 'Mumbai Real Estate', 'Premium Apartments', 'Godrej Properties']
     },
+    'godrej-reserve-premium-residential-project': {
+        title: 'Godrej Reserve: A Premium Residential Project by Godrej Properties',
+        subtitle: 'Experience the perfect blend of modern amenities and nature\'s splendor in this exclusive development.',
+        category: 'Lifestyle',
+        date: '2025-12-03',
+        readTime: '4 min read',
+        author: 'Godrej Properties',
+        authorBio: 'Leading real estate developer in India with a legacy of trust and excellence',
+        image: '/image1.jpg',
+        content: [
+            {
+                type: 'paragraph',
+                text: 'Godrej Reserve presents a premium residential project by Godrej Properties. Crafted with quality, comfort, and serenity as the intention, this exclusive development offers the perfect blend of homes equipped with modern amenities and nature\'s splendor for an unmatched living experience. New inquiries are now open for those who wish to own a home in one of the most trusted and desirable projects.'
+            },
+            {
+                type: 'paragraph',
+                text: 'Every home at Godrej Reserve is thoughtfully planned to offer maximum comfort and elegance. From stylish interiors to smart layouts, every element has been created with great attention to detail to suit modern living needs.'
+            },
+            {
+                type: 'heading',
+                text: 'Key Highlights of Godrej Reserve'
+            },
+            {
+                type: 'list',
+                items: [
+                    'Luxury homes of modern architectural design',
+                    'Spacious, well-ventilated homes with natural light',
+                    'High-quality construction with elegant interior',
+                    'Landscaped gardens and open green spaces',
+                    'Fitness centers and wellness zones',
+                    'Children’s play area and recreational spaces',
+                    'Excellent connectivity to main roads and business hubs',
+                    'Close to schools, hospitals, and shopping centers',
+                    'Safe and secure gated community',
+                    'The trusted brand name of Godrej Properties'
+                ]
+            },
+            {
+                type: 'paragraph',
+                text: 'Godrej Reserve brings a comfortable, convenient, and luxuriant life to its residents. Be it a peaceful abode for family living or a smart investment in property, this is just the perfect option to go with. The strategic location, along with premium facilities, guarantees good value appreciation in the future.'
+            },
+            {
+                type: 'paragraph',
+                text: 'New applications are now being accepted. Connect with us today for pricing, floor plans, and availability.'
+            }
+        ],
+        tags: ['Premium Homes', 'Godrej Properties', 'Real Estate', 'Luxury Living']
+    },
+    'investment-benefits-godrej-reserve': {
+        title: 'Investment Benefits of Buying at Godrej Reserve',
+        subtitle: 'Why Godrej Reserve is the perfect choice for both residence and smart investment.',
+        category: 'Investment',
+        date: '2025-12-03',
+        readTime: '3 min read',
+        author: 'Godrej Properties',
+        authorBio: 'Leading real estate developer in India with a legacy of trust and excellence',
+        image: '/image4.jpg',
+        content: [
+            {
+                type: 'paragraph',
+                text: 'Godrej Reserve is the perfect choice for both residence and investment. Due to its demand, particularly surging property prices within the project, the long-term returns are great. Homes in Godrej developments generally have higher resale value because of the trusted brand reputation and quality construction.'
+            },
+            {
+                type: 'paragraph',
+                text: 'This project also presents a great rental income opportunity because of its premium design, modern amenities, and good connectivity that attract working professionals and families, which mean regular rental demand and a steady income.'
+            },
+            {
+                type: 'heading',
+                text: 'Reasons to Invest'
+            },
+            {
+                type: 'list',
+                items: [
+                    'High resale value',
+                    'Good rental potential',
+                    'Rapid area development',
+                    'Reputed developer',
+                    'Strong buyer demand',
+                    'Better long-term appreciation'
+                ]
+            },
+            {
+                type: 'paragraph',
+                text: 'Thus, investing in Godrej Reserve is safe and smart for a secured future.'
+            }
+        ],
+        tags: ['Investment', 'Real Estate', 'ROI', 'Godrej Properties']
+    },
     // Add more blog posts here as needed
 };
 

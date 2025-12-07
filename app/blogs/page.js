@@ -59,6 +59,54 @@ const blogPosts = [
         readTime: '4 min read',
         author: 'Godrej Properties',
         featured: false
+    },
+    {
+        id: 5,
+        slug: 'godrej-reserve-premium-residential-project',
+        title: 'Godrej Reserve: A Premium Residential Project by Godrej Properties',
+        excerpt: 'Godrej Reserve presents a premium residential project by Godrej Properties. Crafted with quality, comfort, and serenity as the intention, this exclusive development offers the perfect blend of homes equipped with modern amenities.',
+        image: '/image1.jpg',
+        category: 'Lifestyle',
+        date: '2025-12-03',
+        readTime: '4 min read',
+        author: 'Godrej Properties',
+        featured: false
+    },
+    {
+        id: 6,
+        slug: 'investment-benefits-godrej-reserve',
+        title: 'Investment Benefits of Buying at Godrej Reserve',
+        excerpt: 'Godrej Reserve is the perfect choice for both residence and investment. Due to its demand, particularly surging property prices within the project, the long-term returns are great.',
+        image: '/image4.jpg',
+        category: 'Investment',
+        date: '2025-12-03',
+        readTime: '3 min read',
+        author: 'Godrej Properties',
+        featured: false
+    },
+    {
+        id: 7,
+        slug: 'godrej-reserve-good-investment-2025',
+        title: 'Is Godrej Reserve a Good Investment in 2025?',
+        excerpt: 'Godrej Reserve will be a good investment option in 2025 for homebuyers seeking comfort, safety, and long-term appreciation. Discover why this trusted project offers excellent potential for future value growth.',
+        image: '/image13.jpg',
+        category: 'Investment',
+        date: '2025-12-07',
+        readTime: '4 min read',
+        author: 'Godrej Properties',
+        featured: true
+    },
+    {
+        id: 8,
+        slug: 'godrej-reserve-perfect-for-families',
+        title: 'Why Godrej Reserve Is Perfect for Families',
+        excerpt: 'Godrej Reserve is the perfect destination for families seeking security, comfort, and an upgraded lifestyle. Discover a gated community with modern amenities where children can play and grow freely.',
+        image: '/image15.jpg',
+        category: 'Lifestyle',
+        date: '2025-12-07',
+        readTime: '4 min read',
+        author: 'Godrej Properties',
+        featured: false
     }
 ];
 
@@ -191,8 +239,8 @@ export default function BlogsPage() {
                                 key={category}
                                 onClick={() => setSelectedCategory(category)}
                                 className={`px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 ${selectedCategory === category
-                                        ? 'bg-gradient-to-r from-amber-600 to-amber-500 text-white shadow-lg shadow-amber-500/30'
-                                        : 'bg-white text-gray-700 hover:bg-amber-50 hover:text-amber-700 border border-gray-200'
+                                    ? 'bg-gradient-to-r from-amber-600 to-amber-500 text-white shadow-lg shadow-amber-500/30'
+                                    : 'bg-white text-gray-700 hover:bg-amber-50 hover:text-amber-700 border border-gray-200'
                                     }`}
                             >
                                 {category}
