@@ -115,7 +115,7 @@ The project uses <b>Nodemailer + Gmail SMTP (OAuth2)</b> to send automatic email
   <li>🗝 Gmail OAuth2</li>
 </ul>
 
-<h2 style="font-size:30px;">Database (If Enabled)</h2>
+<h2 style="font-size:30px;">Database</h2>
 
 <ul>
   <li>🍃 MongoDB</li>
