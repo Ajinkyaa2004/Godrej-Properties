@@ -1,77 +1,148 @@
+<h1 style="font-size:52px; font-weight:900; text-align:center;">
 🌟 Godrej Reserve – Lead Generation Website
+</h1>
 
+<p style="text-align:center; font-size:18px;">
 Real Estate Lead Capture • High-Conversion UX • Secure Backend
+</p>
 
+<hr/>
+
+<h1 style="font-size:40px; font-weight:800;">
 🏡 Project Overview
+</h1>
 
-The Godrej Reserve Lead Generation Website is a high-performance real-estate landing platform designed to capture, validate, and manage leads efficiently.
-It includes optimized UI sections, property highlights, enquiry forms, scheduling features, email confirmations, and backend APIs—all built for speed, SEO, and conversions.
+<p>
+The <b>Godrej Reserve Lead Generation Website</b> is a high-performance real-estate landing platform
+designed to capture, validate, and manage leads efficiently.
+</p>
 
+<p>
+It includes optimized UI sections, property highlights, enquiry forms, scheduling features,
+email confirmations, and backend APIs — all built for <b>speed, SEO, and conversions</b>.
+</p>
+
+<hr/>
+
+<h1 style="font-size:40px; font-weight:800;">
 🚀 Features
+</h1>
 
-🔹 Frontend
-🌈 Premium UI with luxury fonts & gold gradient theme
-🖼️ Hero banner, amenities, gallery, highlights, and pricing sections
-📝 Contact Form & Schedule-Visit Form (with success messages)
-📩 Email confirmation integrated (Nodemailer setup)
-📱 Fully responsive across mobile, tablet, and desktop
-⚡ Lazy-loaded images for faster performance
+<h2 style="font-size:30px;">🔹 Frontend</h2>
 
-🔹 Backend
-🛠 Node.js + Express API
-✉️ Email confirmation for:
-Contact form submissions
-Schedule Visit form submissions
+<ul>
+  <li>🌈 Premium UI with luxury fonts & gold gradient theme</li>
+  <li>🖼️ Hero banner, amenities, gallery, highlights, and pricing sections</li>
+  <li>📝 Contact Form & Schedule Visit Form (with success messages)</li>
+  <li>📩 Email confirmation integrated (Nodemailer setup)</li>
+  <li>📱 Fully responsive across mobile, tablet, and desktop</li>
+  <li>⚡ Lazy-loaded images for faster performance</li>
+</ul>
 
-🛡 Graceful fallback if SMTP is not configured
-📦 Clean folder structure and environment variable support
+<h2 style="font-size:30px;">🔹 Backend</h2>
 
-🔹 Database (Optional)
-Supports MongoDB for storing:
-Lead name
-Phone number
-Email
-Message
-Visit date
-Form type
-Timestamp
+<ul>
+  <li>🛠 Node.js + Express API</li>
+  <li>✉️ Email confirmation for:</li>
+  <ul>
+    <li>Contact form submissions</li>
+    <li>Schedule Visit form submissions</li>
+  </ul>
+  <li>🛡 Graceful fallback if SMTP is not configured</li>
+  <li>📦 Clean folder structure and environment variable support</li>
+</ul>
 
+<h2 style="font-size:30px;">🔹 Database (Optional)</h2>
+
+<p>Supports MongoDB for storing:</p>
+
+<ul>
+  <li>Lead name</li>
+  <li>Phone number</li>
+  <li>Email</li>
+  <li>Message</li>
+  <li>Visit date</li>
+  <li>Form type</li>
+  <li>Timestamp</li>
+</ul>
+
+<hr/>
+
+<h1 style="font-size:40px; font-weight:800;">
 📧 Email System
-The project uses Nodemailer + Gmail SMTP (OAuth2) to send automatic emails:
-🔔 Contact Form
-Sends a welcome/thank-you email
-Includes user details
-Mentions 24-hour support follow-up
+</h1>
 
-📅 Schedule Visit Form
-Sends a visit confirmation email
-Includes date & next steps
+<p>
+The project uses <b>Nodemailer + Gmail SMTP (OAuth2)</b> to send automatic emails:
+</p>
 
+<h2 style="font-size:28px;">🔔 Contact Form</h2>
+
+<ul>
+  <li>Sends a welcome / thank-you email</li>
+  <li>Includes user details</li>
+  <li>Mentions 24-hour support follow-up</li>
+</ul>
+
+<h2 style="font-size:28px;">📅 Schedule Visit Form</h2>
+
+<ul>
+  <li>Sends a visit confirmation email</li>
+  <li>Includes visit date & next steps</li>
+</ul>
+
+<hr/>
+
+<h1 style="font-size:40px; font-weight:800;">
 🧩 Tech Stack
-Frontend
-⚛️ Next.js / React
-🎨 Tailwind CSS
-🧩 ShadCN UI
+</h1>
 
-🔤 Premium fonts (Playfair Display, etc.)
-Backend
-🟩 Node.js
-🚏 Express.js
-✉️ Nodemailer
-🗝 Gmail OAuth2
+<h2 style="font-size:30px;">Frontend</h2>
 
-Database (if enabled)
-🍃 MongoDB
-🧵 Mongoose ORM
+<ul>
+  <li>⚛️ Next.js / React</li>
+  <li>🎨 Tailwind CSS</li>
+  <li>🧩 ShadCN UI</li>
+  <li>🔤 Premium fonts (Playfair Display, etc.)</li>
+</ul>
 
-📞 Contact
-If you are interested in collaborating or improving the project:
-📧 dhumalajinkya2004@gmail.com
-🔗 https://itsajinkya.vercel.app 
-📫 LinkedIn: [https://www.linkedin.com/in/ajinkya842004/]
+<h2 style="font-size:30px;">Backend</h2>
+
+<ul>
+  <li>🟩 Node.js</li>
+  <li>🚏 Express.js</li>
+  <li>✉️ Nodemailer</li>
+  <li>🗝 Gmail OAuth2</li>
+</ul>
+
+<h2 style="font-size:30px;">Database (If Enabled)</h2>
+
+<ul>
+  <li>🍃 MongoDB</li>
+  <li>🧵 Mongoose ORM</li>
+</ul>
+<hr/>
+
+<h2 style="text-align:center; font-size:26px;">
+Crafted with ❤️ by <b>AJINKYA DHUMAL</b> (SYNERGY THREE)
+</h2>
 
 
-Crafted with ❤️ by AJINKYA DHUMAL !  (SYNERGY THREE)...
+## 🤝 Connect With Me  
 
+<p align="center">
+  <a href="https://www.linkedin.com/in/ajinkya842004/" target="_blank">
+    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" />
+  </a>
+  <a href="mailto:dhumalajinkya2004@gmail.com">
+    <img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white" />
+  </a>
+  <a href="https://github.com/Ajinkyaa2004" target="_blank">
+    <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" />
+  </a>
+  <a href="https://itsajinkya.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/Portfolio-4CAF50?style=for-the-badge&logo=about.me&logoColor=white" />
+  </a>
+</p>
 
 
