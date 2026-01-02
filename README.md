@@ -124,7 +124,7 @@ The project uses <b>Nodemailer + Gmail SMTP (OAuth2)</b> to send automatic email
 <hr/>
 
 <h2 style="text-align:center; font-size:26px;">
-Crafted with ❤️ by <b>AJINKYA DHUMAL</b> (SYNERGY THREE)
+Crafted with ❤️ by <b>AJINKYA DHUMAL</b> 
 </h2>
 
 
